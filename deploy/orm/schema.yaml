@@ -1,0 +1,249 @@
+title: "Multicloud telemetry to OCI"
+description: "Deploys the OCI side of multicloud log, metric and trace ingestion: Log Analytics log group, APM domain, vault, least-privilege IAM and a container instance running the collectors. Cloud-side pipelines are managed with mcctl."
+schemaVersion: 1.1.0
+version: "20261014"
+locale: "en"
+
+variableGroups:
+  - title: "Target and signals"
+    variables:
+      - compartment_ocid
+      - enable_logs
+      - enable_metrics
+      - enable_apm
+      - name_prefix
+  - title: "AWS"
+    variables:
+      - enable_aws
+      - aws_account_id
+      - aws_region
+      - aws_queue_url
+      - aws_dlq_url
+      - aws_role_arn
+      - aws_s3_bucket
+      - aws_s3_prefix
+  - title: "Azure"
+    variables:
+      - enable_azure
+      - azure_tenant_id
+      - azure_client_id
+      - azure_subscription_id
+      - azure_eventhub_namespace
+      - azure_eventhub_name
+  - title: "GCP"
+    variables:
+      - enable_gcp
+      - gcp_project_id
+      - gcp_subscription
+  - title: "Log Analytics"
+    variables:
+      - existing_log_group_ocid
+      - log_group_name
+  - title: "APM and metrics"
+    variables:
+      - existing_apm_domain_ocid
+      - apm_free_tier
+      - apm_sampling_percent
+      - metrics_sink
+  - title: "Container images"
+    variables:
+      - logs_collector_image
+      - metrics_bridge_image
+      - otel_collector_image
+  - title: "Runtime and network"
+    variables:
+      - container_shape
+      - container_ocpus
+      - container_memory_gbs
+      - availability_domain_index
+      - existing_subnet_ocid
+      - vcn_cidr
+  - title: "Hidden"
+    visible: false
+    variables:
+      - region
+      - tenancy_ocid
+
+variables:
+  compartment_ocid:
+    title: "Target compartment"
+    description: "All resources are created here and every policy is scoped to it."
+    type: oci:identity:compartment:id
+    required: true
+  enable_logs:
+    title: "Collect logs into Log Analytics"
+    description: "Collect logs into Log Analytics."
+    type: boolean
+  enable_metrics:
+    title: "Pull cloud metrics into OCI Monitoring"
+    description: "Pull cloud metrics into OCI Monitoring."
+    type: boolean
+  enable_apm:
+    title: "Forward traces and metrics to OCI APM"
+    description: "Creates an APM domain unless an existing one is given. The private data key is stored in a vault secret."
+    type: boolean
+  name_prefix:
+    title: "Resource name prefix"
+    description: "Resource name prefix."
+    type: string
+  enable_aws:
+    title: "Enable AWS"
+    description: "Enable AWS."
+    type: boolean
+  aws_account_id:
+    title: "AWS account ID (12 digits)"
+    description: "AWS account ID (12 digits)."
+    type: string
+    visible: enable_aws
+    required: false
+  aws_region:
+    title: "AWS region"
+    description: "AWS region."
+    type: string
+    visible: enable_aws
+    required: false
+  aws_queue_url:
+    title: "SQS queue URL (S3 notifications)"
+    description: "SQS queue URL (S3 notifications)."
+    type: string
+    visible: enable_aws
+    required: false
+  aws_dlq_url:
+    title: "SQS dead-letter queue URL"
+    description: "SQS dead-letter queue URL."
+    type: string
+    visible: enable_aws
+  aws_role_arn:
+    title: "IAM role ARN assumed through web identity federation"
+    description: "Role the collector assumes through OIDC web identity federation. No access keys are ever entered here."
+    type: string
+    visible: enable_aws
+    required: false
+  aws_s3_bucket:
+    title: "CloudTrail S3 bucket name"
+    description: "CloudTrail S3 bucket name."
+    type: string
+    visible: enable_aws
+  aws_s3_prefix:
+    title: "S3 key prefix"
+    description: "S3 key prefix."
+    type: string
+    visible: enable_aws
+  enable_azure:
+    title: "Enable Azure"
+    description: "Enable Azure."
+    type: boolean
+  azure_tenant_id:
+    title: "Azure tenant ID"
+    description: "Azure tenant ID."
+    type: string
+    visible: enable_azure
+  azure_client_id:
+    title: "Federated app registration (client) ID"
+    description: "App registration with a federated credential. No client secrets are ever entered here."
+    type: string
+    visible: enable_azure
+  azure_subscription_id:
+    title: "Azure subscription ID"
+    description: "Azure subscription ID."
+    type: string
+    visible: enable_azure
+  azure_eventhub_namespace:
+    title: "Event Hubs namespace (FQDN)"
+    description: "Event Hubs namespace (FQDN)."
+    type: string
+    visible: enable_azure
+  azure_eventhub_name:
+    title: "Event Hub name"
+    description: "Event Hub name."
+    type: string
+    visible: enable_azure
+  enable_gcp:
+    title: "Enable GCP"
+    description: "Enable GCP."
+    type: boolean
+  gcp_project_id:
+    title: "GCP project ID"
+    description: "GCP project ID."
+    type: string
+    visible: enable_gcp
+  gcp_subscription:
+    title: "Pub/Sub subscription name"
+    description: "Pub/Sub subscription fed by the log sink. Authenticates through workload identity federation; no key files."
+    type: string
+    visible: enable_gcp
+  existing_log_group_ocid:
+    title: "Existing log group OCID (leave empty to create one)"
+    description: "Existing log group OCID (leave empty to create one)."
+    type: string
+    visible: enable_logs
+  log_group_name:
+    title: "New log group name"
+    description: "New log group name."
+    type: string
+    visible: {and: [enable_logs, {eq: [existing_log_group_ocid, ""]}]}
+  existing_apm_domain_ocid:
+    title: "Existing APM domain OCID (leave empty to create one)"
+    description: "Existing APM domain OCID (leave empty to create one)."
+    type: string
+    visible: enable_apm
+  apm_free_tier:
+    title: "Create the APM domain in the free tier"
+    description: "Create the APM domain in the free tier."
+    type: boolean
+    visible: {and: [enable_apm, {eq: [existing_apm_domain_ocid, ""]}]}
+  apm_sampling_percent:
+    title: "Trace head-sampling percent"
+    description: "Trace head-sampling percent."
+    type: number
+    visible: enable_apm
+  metrics_sink:
+    title: "Metrics destination"
+    description: "Monitoring uses the metrics bridge (custom_ namespaces); APM and both need APM enabled."
+    type: enum
+    enum: [monitoring, apm, both]
+    visible: enable_metrics
+  logs_collector_image:
+    title: "Logs collector image"
+    description: "Logs collector image."
+    type: string
+  metrics_bridge_image:
+    title: "Metrics bridge image"
+    description: "Metrics bridge image."
+    type: string
+    visible: enable_metrics
+  otel_collector_image:
+    title: "OpenTelemetry Collector Contrib image (pinned)"
+    description: "OpenTelemetry Collector Contrib image (pinned)."
+    type: string
+  container_shape:
+    title: "Container instance shape"
+    description: "Container instance shape."
+    type: string
+  container_ocpus:
+    title: "OCPUs"
+    description: "OCPUs."
+    type: number
+  container_memory_gbs:
+    title: "Memory (GB)"
+    description: "Memory (GB)."
+    type: number
+  availability_domain_index:
+    title: "Availability domain index"
+    description: "Availability domain index."
+    type: number
+  existing_subnet_ocid:
+    title: "Existing private subnet OCID (leave empty to create a minimal VCN)"
+    description: "Must have egress to the internet (NAT) or the required service endpoints."
+    type: string
+  vcn_cidr:
+    title: "CIDR of the new VCN and subnet"
+    description: "CIDR of the new VCN and subnet."
+    type: string
+    visible: {eq: [existing_subnet_ocid, ""]}
+  region:
+    type: string
+    visible: false
+  tenancy_ocid:
+    type: string
+    visible: false

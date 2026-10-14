@@ -1,0 +1,11 @@
+# Copy to .redaction-patterns.local (gitignored) and add terms that must never be committed,
+# for example your organisation, customer or internal project names, or private hostnames.
+# One extended regular expression (ERE, as used by grep -E) per line; '#' starts a comment.
+# scripts/redaction_gate.sh reads this file and reports "file:line: local pattern" without
+# echoing the matched value.
+#
+# Examples (replace with your own, never commit the real file):
+# (?i) is not supported; use bracket classes for case-insensitivity.
+# [Aa]cme[- ]?[Cc]orp
+# internal-wiki\.corp\.invalid
+# project-codename-[0-9]+

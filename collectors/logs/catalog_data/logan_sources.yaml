@@ -1,0 +1,492 @@
+schema_version: mc.logan-sources.v1
+
+# Keys are provider-neutral identifiers. Tenant-specific display names and
+# field mappings belong under tenants.<tenant-id>.sources.<logical-key>.
+sources:
+  oci.audit:
+    display_name: OCI Audit Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      actor.user.name: User Name
+      src_endpoint.ip: Source IP
+      dst_endpoint.ip: Destination IP
+      activity_name: Event Name
+      status: Status
+      resource: Resource Name
+      k8s.namespace.name: Namespace
+      trace_id: Trace ID
+  oci.vcn_flow:
+    display_name: OCI VCN Flow Unified Schema Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      actor.user.name: User Name
+      src_endpoint.ip: Source IP
+      dst_endpoint.ip: Destination IP
+      activity_name: Action
+      status: Status
+      resource: Entity
+      k8s.namespace.name: Namespace
+      trace_id: Trace ID
+  oci.vcn_flow_legacy:
+    display_name: OCI VCN Flow Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      src_endpoint.ip: Source IP
+      dst_endpoint.ip: Destination IP
+      activity_name: Action
+      status: Status
+      resource: Entity
+  oci.waf:
+    display_name: OCI WAF Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      actor.user.name: User Name
+      src_endpoint.ip: Source IP
+      dst_endpoint.ip: Destination IP
+      activity_name: Action
+      status: Status Code
+      resource: Rule
+      trace_id: Trace ID
+  oci.waf_access:
+    display_name: OCI WAF Access Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      src_endpoint.ip: Source IP
+      dst_endpoint.ip: Destination IP
+      activity_name: Action
+      status: Status Code
+      resource: Rule
+      trace_id: Trace ID
+  oci.load_balancer_access:
+    display_name: OCI Load Balancer Access Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      src_endpoint.ip: Source IP
+      dst_endpoint.ip: Destination IP
+      activity_name: Method
+      status: Status Code
+      resource: Entity
+      trace_id: Trace ID
+  linux.secure:
+    display_name: Linux Secure Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      actor.user.name: User Name
+      src_endpoint.ip: Source IP
+      activity_name: Event Type
+      status: Status
+      resource: Entity
+      trace_id: Trace ID
+  linux.syslog:
+    display_name: Linux Syslog Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      actor.user.name: User Name
+      activity_name: Event Type
+      status: Severity
+      resource: Entity
+      trace_id: Trace ID
+  linux.audit:
+    display_name: Linux Audit Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      actor.user.name: User Name
+      src_endpoint.ip: Source IP
+      activity_name: Audit Type
+      status: Status
+      resource: Entity
+      trace_id: Trace ID
+  windows.security:
+    display_name: Windows Security Events
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      actor.user.name: User Name
+      src_endpoint.ip: Source IP
+      activity_name: Event Type
+      status: Event ID
+      resource: Entity
+      trace_id: Trace ID
+  windows.system:
+    display_name: Windows System Events
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      actor.user.name: User Name
+      activity_name: Event Type
+      status: Event ID
+      resource: Entity
+      trace_id: Trace ID
+  windows.sysmon:
+    display_name: Windows Sysmon Events
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      actor.user.name: User Name
+      src_endpoint.ip: Source IP
+      dst_endpoint.ip: Destination IP
+      activity_name: Event Type
+      status: Event ID
+      resource: Entity
+      trace_id: Trace ID
+  k8s.pod_object:
+    display_name: Kubernetes Pod Object Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      actor.user.name: User Name
+      activity_name: Kubernetes Event Action
+      status: Pod Phase
+      resource: Pod
+      k8s.namespace.name: Namespace
+      trace_id: Trace ID
+  k8s.node_object:
+    display_name: Kubernetes Node Object Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      activity_name: Kubernetes Event Action
+      status: Ready Status
+      resource: Node
+      k8s.namespace.name: Namespace
+      trace_id: Trace ID
+  k8s.deployment_object:
+    display_name: Kubernetes Deployment Object Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      activity_name: Kubernetes Event Action
+      status: Status
+      resource: Deployment
+      k8s.namespace.name: Namespace
+      trace_id: Trace ID
+  k8s.daemonset_object:
+    display_name: Kubernetes DaemonSet Object Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      activity_name: Kubernetes Event Action
+      status: Status
+      resource: DaemonSet
+      k8s.namespace.name: Namespace
+      trace_id: Trace ID
+  k8s.statefulset_object:
+    display_name: Kubernetes StatefulSet Object Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      activity_name: Kubernetes Event Action
+      status: Status
+      resource: StatefulSet
+      k8s.namespace.name: Namespace
+      trace_id: Trace ID
+  k8s.job_object:
+    display_name: Kubernetes Job Object Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      activity_name: Kubernetes Event Action
+      status: Status
+      resource: Job
+      k8s.namespace.name: Namespace
+      trace_id: Trace ID
+  k8s.cronjob_object:
+    display_name: Kubernetes CronJob Object Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      activity_name: Kubernetes Event Action
+      status: Status
+      resource: CronJob
+      k8s.namespace.name: Namespace
+      trace_id: Trace ID
+  k8s.event_object:
+    display_name: Kubernetes Event Object Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      actor.user.name: User Name
+      activity_name: Kubernetes Event Action
+      status: Event Type
+      resource: Involved Object Name
+      k8s.namespace.name: Namespace
+      trace_id: Trace ID
+  k8s.container_generic:
+    display_name: Kubernetes Container Generic Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      actor.user.name: User Name
+      src_endpoint.ip: Source IP
+      dst_endpoint.ip: Destination IP
+      activity_name: Event Type
+      status: Severity
+      resource: Entity
+      k8s.namespace.name: Namespace
+      trace_id: Trace ID
+  k8s.core_dns:
+    display_name: Kubernetes Core DNS Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      src_endpoint.ip: Source IP
+      dst_endpoint.ip: Destination IP
+      activity_name: Query Name
+      status: Response Code
+      resource: Entity
+      k8s.namespace.name: Namespace
+      trace_id: Trace ID
+  k8s.oke_control_plane:
+    display_name: OKE Control Plane Logs
+    status: active
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Cloud Provider
+      cloud.account.uid: Compartment OCID
+      cloud.region: Region
+      actor.user.name: User Name
+      activity_name: Event Type
+      status: Severity
+      resource: Entity
+      k8s.namespace.name: Namespace
+      trace_id: Trace ID
+  aws.cloudtrail:
+    display_name: AWS CloudTrail (OCSF)
+    # Implemented transport/content; live collection remains unverified.
+    status: implemented
+    fields:
+      log.source: Log Source
+      timestamp: Time
+      cloud.provider: Provider
+      cloud.account.uid: Account
+      cloud.region: Region
+      actor.user.name: User Name
+      src_endpoint.ip: Source IP
+      activity_name: Operation
+      status: Status
+      resource: Resource
+      trace_id: Trace ID
+      event_uid: Event ID
+      service_name: Service
+      source_address: Host Name (Client)
+      error_code: Error ID
+  azure.activity:
+    display_name: Azure Activity (OCSF)
+    # Implemented transport/content; live collection remains unverified.
+    status: implemented
+    fields:
+      log.source: Log Source
+      timestamp: Azure Event Time
+      cloud.provider: Azure Cloud Provider
+      cloud.account.uid: Azure Account ID
+      cloud.region: Azure Region
+      actor.user.name: Azure Actor User Name
+      src_endpoint.ip: Azure Source IP
+      activity_name: Azure Activity Name
+      status: Azure Status
+      resource: Azure Resource
+      trace_id: Azure Correlation ID
+      event_uid: Azure Event ID
+      service_name: Azure Service Name
+      source_address: Azure Source Address
+  azure.entra_signin:
+    display_name: Azure Entra Sign-in (OCSF)
+    # Implemented transport/content; live collection remains unverified.
+    status: implemented
+    fields:
+      log.source: Log Source
+      timestamp: Azure Event Time
+      cloud.provider: Azure Cloud Provider
+      cloud.account.uid: Azure Account ID
+      cloud.region: Azure Region
+      actor.user.name: Azure Actor User Name
+      src_endpoint.ip: Azure Source IP
+      activity_name: Azure Activity Name
+      status: Azure Status
+      resource: Azure Resource
+      trace_id: Azure Correlation ID
+      event_uid: Azure Event ID
+      service_name: Azure Service Name
+      source_address: Azure Source Address
+  azure.entra_audit:
+    display_name: Azure Entra Audit (OCSF)
+    # Implemented transport/content; live collection remains unverified.
+    status: implemented
+    fields:
+      log.source: Log Source
+      timestamp: Azure Event Time
+      cloud.provider: Azure Cloud Provider
+      cloud.account.uid: Azure Account ID
+      cloud.region: Azure Region
+      actor.user.name: Azure Actor User Name
+      src_endpoint.ip: Azure Source IP
+      activity_name: Azure Activity Name
+      status: Azure Status
+      resource: Azure Resource
+      trace_id: Azure Correlation ID
+      event_uid: Azure Event ID
+      service_name: Azure Service Name
+      source_address: Azure Source Address
+  gcp.audit:
+    display_name: GCP Audit Logs (OCSF)
+    # Implemented transport/content; live collection remains unverified.
+    status: implemented
+    fields:
+      log.source: Log Source
+      timestamp: GCP Event Time
+      cloud.provider: GCP Cloud Provider
+      cloud.account.uid: GCP Project ID
+      cloud.region: GCP Region
+      actor.user.name: GCP Actor User Name
+      src_endpoint.ip: GCP Source IP
+      activity_name: GCP Activity Name
+      status: GCP Status
+      resource: GCP Resource
+      trace_id: GCP Trace ID
+      event_uid: GCP Event ID
+      service_name: GCP Service Name
+      source_address: GCP Source Address
+      dst_endpoint.ip: GCP Destination IP
+      k8s.namespace.name: GCP Kubernetes Namespace
+  gcp.vpc_flow:
+    display_name: GCP VPC Flow (OCSF)
+    # Implemented transport/content; live collection remains unverified.
+    status: implemented
+    fields:
+      log.source: Log Source
+      timestamp: GCP Event Time
+      cloud.provider: GCP Cloud Provider
+      cloud.account.uid: GCP Project ID
+      cloud.region: GCP Region
+      actor.user.name: GCP Actor User Name
+      src_endpoint.ip: GCP Source IP
+      activity_name: GCP Activity Name
+      status: GCP Status
+      resource: GCP Resource
+      trace_id: GCP Trace ID
+      event_uid: GCP Event ID
+      service_name: GCP Service Name
+      source_address: GCP Source Address
+      dst_endpoint.ip: GCP Destination IP
+      k8s.namespace.name: GCP Kubernetes Namespace
+  gcp.gke_audit:
+    display_name: GCP GKE Audit (OCSF)
+    # Implemented transport/content; live collection remains unverified.
+    status: implemented
+    fields:
+      log.source: Log Source
+      timestamp: GCP Event Time
+      cloud.provider: GCP Cloud Provider
+      cloud.account.uid: GCP Project ID
+      cloud.region: GCP Region
+      actor.user.name: GCP Actor User Name
+      src_endpoint.ip: GCP Source IP
+      activity_name: GCP Activity Name
+      status: GCP Status
+      resource: GCP Resource
+      trace_id: GCP Trace ID
+      event_uid: GCP Event ID
+      service_name: GCP Service Name
+      source_address: GCP Source Address
+      dst_endpoint.ip: GCP Destination IP
+      k8s.namespace.name: GCP Kubernetes Namespace
+
+tenants: {}

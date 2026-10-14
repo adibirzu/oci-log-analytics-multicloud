@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/oci-log-analytics-multicloud/collectors/otel/metrics_pull.schema.json",
+  "title": "OTel metrics-pull generator input",
+  "description": "Reviewed allowlist describing which cloud metrics the OTel Collector Contrib pull receivers may read. Secret-like keys may only carry ${env:NAME} references.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "clouds"],
+  "properties": {
+    "version": {"const": 1},
+    "metrics_sink": {"enum": ["monitoring", "apm", "both"], "default": "monitoring"},
+    "clouds": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "aws": {"$ref": "#/$defs/aws"},
+        "azure": {"$ref": "#/$defs/azure"},
+        "gcp": {"$ref": "#/$defs/gcp"}
+      }
+    }
+  },
+  "$defs": {
+    "envRef": {
+      "type": "string",
+      "pattern": "^\\$\\{env:[A-Za-z_][A-Za-z0-9_]*\\}$"
+    },
+    "interval": {
+      "type": "integer",
+      "minimum": 300,
+      "maximum": 86400,
+      "default": 300,
+      "description": "Poll interval in seconds. Floor of 300 because cloud metric APIs bill per request."
+    },
+    "aws": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "interval", "identity", "regions", "metrics"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "interval": {"$ref": "#/$defs/interval"},
+        "identity": {"enum": ["sdk_chain", "web_identity"]},
+        "regions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z]{2}(-[a-z]+)+-[0-9]$"}
+        },
+        "metrics": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["namespace", "metric_name"],
+            "properties": {
+              "namespace": {"type": "string", "pattern": "^[A-Za-z0-9/._-]+$"},
+              "metric_name": {"type": "string", "minLength": 1},
+              "stat": {"enum": ["Average", "Sum", "Minimum", "Maximum", "SampleCount"], "default": "Average"}
+            }
+          }
+        }
+      },
+      "patternProperties": {"(access_key|secret|client_secret|password|passwd|token|datakey|api_key)": {"$ref": "#/$defs/envRef"}}
+    },
+    "azure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "interval", "identity", "metrics"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "interval": {"$ref": "#/$defs/interval"},
+        "identity": {"enum": ["workload_identity", "managed_identity"]},
+        "metrics": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["service", "metric"],
+            "properties": {
+              "service": {"type": "string", "pattern": "^Microsoft\\.[A-Za-z]+/[A-Za-z0-9/]+$"},
+              "metric": {"type": "string", "minLength": 1},
+              "aggregations": {"type": "array", "items": {"enum": ["average", "count", "maximum", "minimum", "total", "*"]}}
+            }
+          }
+        }
+      },
+      "patternProperties": {"(access_key|secret|client_secret|password|passwd|token|datakey|api_key)": {"$ref": "#/$defs/envRef"}}
+    },
+    "gcp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "interval", "identity", "metrics"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "interval": {"$ref": "#/$defs/interval"},
+        "identity": {"enum": ["adc", "workload_identity"]},
+        "metrics": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "pattern": "^[a-z0-9-]+\\.googleapis\\.com/[A-Za-z0-9/_.-]+$"}
+        }
+      },
+      "patternProperties": {"(access_key|secret|client_secret|password|passwd|token|datakey|api_key)": {"$ref": "#/$defs/envRef"}}
+    }
+  }
+}

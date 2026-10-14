@@ -1,0 +1,34 @@
+{
+  "schema_version": "mc.logan-content.v1",
+  "source": {
+    "name": "AZURE_ENTRA_SIGNIN_OCSF",
+    "display_name": "Azure Entra Sign-in (OCSF)",
+    "type_name": "os_file",
+    "description": "One allowlisted normalized Azure diagnostic record per collector line.",
+    "is_for_cloud": false,
+    "parsers": [
+      "AZURE_ENTRA_SIGNIN_OCSF_PARSER"
+    ],
+    "entity_types": [
+      {
+        "entity_type": "omc_host_linux"
+      }
+    ]
+  },
+  "catalog_mappings": {
+    "log.source": "Log Source",
+    "timestamp": "Azure Event Time",
+    "cloud.provider": "Azure Cloud Provider",
+    "cloud.account.uid": "Azure Account ID",
+    "cloud.region": "Azure Region",
+    "actor.user.name": "Azure Actor User Name",
+    "src_endpoint.ip": "Azure Source IP",
+    "activity_name": "Azure Activity Name",
+    "status": "Azure Status",
+    "resource": "Azure Resource",
+    "trace_id": "Azure Correlation ID",
+    "event_uid": "Azure Event ID",
+    "service_name": "Azure Service Name",
+    "source_address": "Azure Source Address"
+  }
+}

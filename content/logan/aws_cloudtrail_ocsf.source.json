@@ -1,0 +1,35 @@
+{
+  "schema_version": "mc.logan-content.v1",
+  "source": {
+    "name": "AWS_CLOUDTRAIL_OCSF",
+    "display_name": "AWS CloudTrail (OCSF)",
+    "type_name": "os_file",
+    "description": "One nested AWS CloudTrail OCSF JSON record per collector line.",
+    "is_for_cloud": false,
+    "parsers": [
+      "AWS_CLOUDTRAIL_OCSF_PARSER"
+    ],
+    "entity_types": [
+      {
+        "entity_type": "omc_host_linux"
+      }
+    ]
+  },
+  "catalog_mappings": {
+    "timestamp": "Time",
+    "cloud.provider": "Provider",
+    "cloud.account.uid": "Account",
+    "cloud.region": "Region",
+    "actor.user.name": "User Name",
+    "src_endpoint.ip": "Source IP",
+    "activity_name": "Operation",
+    "status": "Status",
+    "resource": "Resource",
+    "trace_id": "Trace ID",
+    "event_uid": "Event ID",
+    "service_name": "Service",
+    "source_address": "Host Name (Client)",
+    "error_code": "Error ID",
+    "log.source": "Log Source"
+  }
+}

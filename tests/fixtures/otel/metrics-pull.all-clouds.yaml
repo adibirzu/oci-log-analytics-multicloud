@@ -1,0 +1,27 @@
+version: 1
+metrics_sink: both
+clouds:
+  aws:
+    enabled: true
+    interval: 300
+    identity: web_identity
+    regions: [eu-central-1, us-east-1]
+    metrics:
+      - namespace: AWS/EC2
+        metric_name: CPUUtilization
+        stat: Average
+  azure:
+    enabled: true
+    interval: 600
+    identity: managed_identity
+    metrics:
+      - service: Microsoft.Compute/virtualMachines
+        metric: Percentage CPU
+      - service: Microsoft.Storage/storageAccounts
+        metric: Transactions
+  gcp:
+    enabled: true
+    interval: 300
+    identity: workload_identity
+    metrics:
+      - compute.googleapis.com/instance/cpu/utilization

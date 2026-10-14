@@ -1,0 +1,48 @@
+# Gateway collector: OTLP in, OCI APM out. Secrets arrive as environment
+# variables at runtime; nothing here is a literal credential.
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 80
+    spike_limit_percentage: 20
+  filter/health:
+    error_mode: ignore
+    traces:
+      span:
+        - 'attributes["http.route"] == "/health"'
+        - 'attributes["http.route"] == "/healthz"'
+        - 'attributes["http.route"] == "/ready"'
+        - 'attributes["http.route"] == "/live"'
+        - 'attributes["url.path"] == "/health"'
+        - 'attributes["url.path"] == "/healthz"'
+        - 'attributes["url.path"] == "/ready"'
+        - 'attributes["url.path"] == "/live"'
+  probabilistic_sampler:
+    sampling_percentage: $${env:APM_SAMPLING_PERCENT:-10}
+  batch: {}
+
+exporters:
+  otlphttp/apm:
+    traces_endpoint: $${env:OCI_APM_ENDPOINT}/20200101/opentelemetry/private/v1/traces
+    metrics_endpoint: $${env:OCI_APM_ENDPOINT}/20200101/opentelemetry/v1/metrics
+    headers:
+      Authorization: "dataKey $${env:OCI_APM_PRIVATE_DATAKEY}"
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, filter/health, probabilistic_sampler, batch]
+      exporters: [otlphttp/apm]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlphttp/apm]

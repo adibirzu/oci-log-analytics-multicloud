@@ -1,0 +1,70 @@
+{
+  "schema_version": "mc.logan-content.v1",
+  "fields": [
+    {
+      "name": "AZURE_TIMESTAMP",
+      "display_name": "Azure Event Time",
+      "data_type": "TIMESTAMP"
+    },
+    {
+      "name": "AZURE_CLOUD_PROVIDER",
+      "display_name": "Azure Cloud Provider",
+      "data_type": "STRING"
+    },
+    {
+      "name": "AZURE_CLOUD_ACCOUNT_UID",
+      "display_name": "Azure Account ID",
+      "data_type": "STRING"
+    },
+    {
+      "name": "AZURE_CLOUD_REGION",
+      "display_name": "Azure Region",
+      "data_type": "STRING"
+    },
+    {
+      "name": "AZURE_ACTOR_USER_NAME",
+      "display_name": "Azure Actor User Name",
+      "data_type": "STRING"
+    },
+    {
+      "name": "AZURE_SRC_ENDPOINT_IP",
+      "display_name": "Azure Source IP",
+      "data_type": "STRING"
+    },
+    {
+      "name": "AZURE_ACTIVITY_NAME",
+      "display_name": "Azure Activity Name",
+      "data_type": "STRING"
+    },
+    {
+      "name": "AZURE_STATUS",
+      "display_name": "Azure Status",
+      "data_type": "STRING"
+    },
+    {
+      "name": "AZURE_RESOURCE",
+      "display_name": "Azure Resource",
+      "data_type": "STRING"
+    },
+    {
+      "name": "AZURE_TRACE_ID",
+      "display_name": "Azure Correlation ID",
+      "data_type": "STRING"
+    },
+    {
+      "name": "AZURE_EVENT_UID",
+      "display_name": "Azure Event ID",
+      "data_type": "STRING"
+    },
+    {
+      "name": "AZURE_SERVICE_NAME",
+      "display_name": "Azure Service Name",
+      "data_type": "STRING"
+    },
+    {
+      "name": "AZURE_SOURCE_ADDRESS",
+      "display_name": "Azure Source Address",
+      "data_type": "STRING"
+    }
+  ]
+}

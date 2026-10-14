@@ -1,0 +1,21 @@
+name: ci
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      # TODO pin SHA: actions/checkout v4 (full commit SHA not verifiable offline)
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      # TODO pin SHA: actions/setup-python v5 (full commit SHA not verifiable offline)
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e '.[dev,aws]'
+      - run: python -m pytest -q
+      - run: ruff check .
+        continue-on-error: true
+      - run: bash scripts/redaction_gate.sh --all

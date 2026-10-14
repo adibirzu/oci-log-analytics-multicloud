@@ -1,0 +1,18 @@
+{
+  "records": [{
+    "time": "2026-01-01T00:00:00Z",
+    "category": "SignInLogs",
+    "tenantId": "22222222-2222-4222-8222-222222222222",
+    "resourceId": "/tenants/22222222-2222-4222-8222-222222222222/providers/Microsoft.aadiam",
+    "operationName": "Sign-in activity",
+    "resultType": "50126",
+    "properties": {
+      "id": "44444444-4444-4444-8444-444444444444",
+      "userPrincipalName": "operator@example.invalid",
+      "ipAddress": "198.51.100.20",
+      "resourceDisplayName": "sample-application",
+      "status": {"errorCode": 50126, "failureReason": "untrusted_payload"},
+      "untrusted_payload": {"token": "not forwarded"}
+    }
+  }]
+}

@@ -1,0 +1,99 @@
+{
+  "schema_version": "mc.logan-content.v1",
+  "parser": {
+    "name": "AZURE_ENTRA_AUDIT_OCSF_PARSER",
+    "display_name": "Azure Entra Audit (OCSF)",
+    "language": "en_US",
+    "type": "JSON",
+    "is_single_line_content": true,
+    "parser_timezone": "UTC",
+    "example_content": "{\"timestamp\": \"2026-01-01T00:00:00Z\", \"cloud\": {\"provider\": \"azure\", \"account\": {\"uid\": \"11111111-1111-4111-8111-111111111111\"}}}",
+    "field_maps": [
+      {
+        "parser_field_name": "Time",
+        "storage_field_name": "Time",
+        "parser_field_sequence": 0,
+        "structured_column_info": "$.timestamp"
+      },
+      {
+        "parser_field_name": "AZURE_TIMESTAMP",
+        "storage_field_name": "AZURE_TIMESTAMP",
+        "parser_field_sequence": 1,
+        "structured_column_info": "$.timestamp"
+      },
+      {
+        "parser_field_name": "AZURE_CLOUD_PROVIDER",
+        "storage_field_name": "AZURE_CLOUD_PROVIDER",
+        "parser_field_sequence": 2,
+        "structured_column_info": "$.cloud.provider"
+      },
+      {
+        "parser_field_name": "AZURE_CLOUD_ACCOUNT_UID",
+        "storage_field_name": "AZURE_CLOUD_ACCOUNT_UID",
+        "parser_field_sequence": 3,
+        "structured_column_info": "$.cloud.account.uid"
+      },
+      {
+        "parser_field_name": "AZURE_CLOUD_REGION",
+        "storage_field_name": "AZURE_CLOUD_REGION",
+        "parser_field_sequence": 4,
+        "structured_column_info": "$.cloud.region"
+      },
+      {
+        "parser_field_name": "AZURE_ACTOR_USER_NAME",
+        "storage_field_name": "AZURE_ACTOR_USER_NAME",
+        "parser_field_sequence": 5,
+        "structured_column_info": "$.actor.user.name"
+      },
+      {
+        "parser_field_name": "AZURE_SRC_ENDPOINT_IP",
+        "storage_field_name": "AZURE_SRC_ENDPOINT_IP",
+        "parser_field_sequence": 6,
+        "structured_column_info": "$.src_endpoint.ip"
+      },
+      {
+        "parser_field_name": "AZURE_ACTIVITY_NAME",
+        "storage_field_name": "AZURE_ACTIVITY_NAME",
+        "parser_field_sequence": 7,
+        "structured_column_info": "$.activity_name"
+      },
+      {
+        "parser_field_name": "AZURE_STATUS",
+        "storage_field_name": "AZURE_STATUS",
+        "parser_field_sequence": 8,
+        "structured_column_info": "$.status"
+      },
+      {
+        "parser_field_name": "AZURE_RESOURCE",
+        "storage_field_name": "AZURE_RESOURCE",
+        "parser_field_sequence": 9,
+        "structured_column_info": "$.resource"
+      },
+      {
+        "parser_field_name": "AZURE_TRACE_ID",
+        "storage_field_name": "AZURE_TRACE_ID",
+        "parser_field_sequence": 10,
+        "structured_column_info": "$.trace_id"
+      },
+      {
+        "parser_field_name": "AZURE_EVENT_UID",
+        "storage_field_name": "AZURE_EVENT_UID",
+        "parser_field_sequence": 11,
+        "structured_column_info": "$.event_uid"
+      },
+      {
+        "parser_field_name": "AZURE_SERVICE_NAME",
+        "storage_field_name": "AZURE_SERVICE_NAME",
+        "parser_field_sequence": 12,
+        "structured_column_info": "$.service_name"
+      },
+      {
+        "parser_field_name": "AZURE_SOURCE_ADDRESS",
+        "storage_field_name": "AZURE_SOURCE_ADDRESS",
+        "parser_field_sequence": 13,
+        "structured_column_info": "$.source_address"
+      }
+    ],
+    "header_content": "$"
+  }
+}

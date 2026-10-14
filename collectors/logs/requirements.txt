@@ -1,0 +1,11 @@
+# Optional ingestion dependencies; backend services do not import this runtime.
+boto3>=1.35,<2
+oci>=2.181.1,<3
+PyYAML>=6,<7
+# Azure adapter only; all imports remain lazy.
+azure-eventhub>=5.12,<6
+azure-identity>=1.17,<2
+azure-eventhub-checkpointstoreblob>=1.1,<2
+# GCP adapter only; all imports remain lazy.
+google-cloud-pubsub>=2.23,<3
+google-auth>=2.30,<3

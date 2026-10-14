@@ -1,0 +1,14 @@
+{
+  "records": [{
+    "time": "2026-01-01T00:00:00Z",
+    "category": "AuditLogs",
+    "tenantId": "22222222-2222-4222-8222-222222222222",
+    "operationName": "Add member to group",
+    "properties": {
+      "id": "55555555-5555-4555-8555-555555555555",
+      "result": "success",
+      "initiatedBy": {"user": {"userPrincipalName": "operator@example.invalid", "ipAddress": "203.0.113.30"}},
+      "targetResources": [{"id": "66666666-6666-4666-8666-666666666666", "modifiedProperties": [{"newValue": "untrusted_payload"}]}]
+    }
+  }]
+}

@@ -1,0 +1,29 @@
+{
+  "schema_version": "mc.logan-content.v1",
+  "parser": {
+    "name": "AWS_CLOUDTRAIL_OCSF_PARSER",
+    "display_name": "AWS CloudTrail (OCSF)",
+    "language": "en_US",
+    "type": "JSON",
+    "is_single_line_content": true,
+    "parser_timezone": "UTC",
+    "example_content": "{\"timestamp\":\"2026-01-01T00:00:00Z\",\"cloud\":{\"provider\":\"aws\",\"account\":{\"uid\":\"123456789012\"},\"region\":\"us-east-1\"}}",
+    "field_maps": [
+      {"parser_field_name": "Time", "storage_field_name": "Time", "parser_field_sequence": 0, "structured_column_info": "$.timestamp"},
+      {"parser_field_name": "Provider", "storage_field_name": "Provider", "parser_field_sequence": 1, "structured_column_info": "$.cloud.provider"},
+      {"parser_field_name": "Account", "storage_field_name": "Account", "parser_field_sequence": 2, "structured_column_info": "$.cloud.account.uid"},
+      {"parser_field_name": "Region", "storage_field_name": "Region", "parser_field_sequence": 3, "structured_column_info": "$.cloud.region"},
+      {"parser_field_name": "User Name", "storage_field_name": "User Name", "parser_field_sequence": 4, "structured_column_info": "$.actor.user.name"},
+      {"parser_field_name": "Source IP", "storage_field_name": "Source IP", "parser_field_sequence": 5, "structured_column_info": "$.src_endpoint.ip"},
+      {"parser_field_name": "Operation", "storage_field_name": "Operation", "parser_field_sequence": 6, "structured_column_info": "$.activity_name"},
+      {"parser_field_name": "Status", "storage_field_name": "Status", "parser_field_sequence": 7, "structured_column_info": "$.status"},
+      {"parser_field_name": "Resource", "storage_field_name": "Resource", "parser_field_sequence": 8, "structured_column_info": "$.resource"},
+      {"parser_field_name": "Trace ID", "storage_field_name": "Trace ID", "parser_field_sequence": 9, "structured_column_info": "$.trace_id"},
+      {"parser_field_name": "Event ID", "storage_field_name": "Event ID", "parser_field_sequence": 10, "structured_column_info": "$.event_uid"},
+      {"parser_field_name": "Service", "storage_field_name": "Service", "parser_field_sequence": 11, "structured_column_info": "$.service_name"},
+      {"parser_field_name": "Host Name (Client)", "storage_field_name": "Host Name (Client)", "parser_field_sequence": 12, "structured_column_info": "$.source_address"},
+      {"parser_field_name": "Error ID", "storage_field_name": "Error ID", "parser_field_sequence": 13, "structured_column_info": "$.error_code"}
+    ],
+    "header_content": "$"
+  }
+}

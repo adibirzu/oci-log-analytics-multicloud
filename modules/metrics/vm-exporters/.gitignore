@@ -1,0 +1,37 @@
+# Runtime / generated
+config.json
+downloads/
+logs/
+*.swp
+
+# Archives & installers (agent zip, MSIs, exporter tarballs)
+*.zip
+*.msi
+*.exe
+oracle.mgmt_agent.zip
+
+# Secrets & credentials — never commit
+.env
+.env.*
+*.pem
+*.key
+*.json.key
+*.rsp
+input.rsp
+.oci/
+gcp-*.json
+*.wallet
+
+# Logs
+*.log
+firebase-debug.log
+
+# Discovery output — contains private IPs (topology)
+discovered-targets.json
+
+# Console captures / raw evidence (project IDs, OCIDs, IPs — redact before committing)
+docs/evidence/
+
+
+# Local end-to-end scratch space
+.e2e-tmp/

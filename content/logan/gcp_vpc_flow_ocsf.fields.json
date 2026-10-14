@@ -1,0 +1,80 @@
+{
+  "schema_version": "mc.logan-content.v1",
+  "fields": [
+    {
+      "name": "GCP_TIMESTAMP",
+      "display_name": "GCP Event Time",
+      "data_type": "TIMESTAMP"
+    },
+    {
+      "name": "GCP_CLOUD_PROVIDER",
+      "display_name": "GCP Cloud Provider",
+      "data_type": "STRING"
+    },
+    {
+      "name": "GCP_CLOUD_ACCOUNT_UID",
+      "display_name": "GCP Project ID",
+      "data_type": "STRING"
+    },
+    {
+      "name": "GCP_CLOUD_REGION",
+      "display_name": "GCP Region",
+      "data_type": "STRING"
+    },
+    {
+      "name": "GCP_ACTOR_USER_NAME",
+      "display_name": "GCP Actor User Name",
+      "data_type": "STRING"
+    },
+    {
+      "name": "GCP_SRC_ENDPOINT_IP",
+      "display_name": "GCP Source IP",
+      "data_type": "STRING"
+    },
+    {
+      "name": "GCP_ACTIVITY_NAME",
+      "display_name": "GCP Activity Name",
+      "data_type": "STRING"
+    },
+    {
+      "name": "GCP_STATUS",
+      "display_name": "GCP Status",
+      "data_type": "STRING"
+    },
+    {
+      "name": "GCP_RESOURCE",
+      "display_name": "GCP Resource",
+      "data_type": "STRING"
+    },
+    {
+      "name": "GCP_TRACE_ID",
+      "display_name": "GCP Trace ID",
+      "data_type": "STRING"
+    },
+    {
+      "name": "GCP_EVENT_UID",
+      "display_name": "GCP Event ID",
+      "data_type": "STRING"
+    },
+    {
+      "name": "GCP_SERVICE_NAME",
+      "display_name": "GCP Service Name",
+      "data_type": "STRING"
+    },
+    {
+      "name": "GCP_SOURCE_ADDRESS",
+      "display_name": "GCP Source Address",
+      "data_type": "STRING"
+    },
+    {
+      "name": "GCP_DST_ENDPOINT_IP",
+      "display_name": "GCP Destination IP",
+      "data_type": "STRING"
+    },
+    {
+      "name": "GCP_K8S_NAMESPACE_NAME",
+      "display_name": "GCP Kubernetes Namespace",
+      "data_type": "STRING"
+    }
+  ]
+}

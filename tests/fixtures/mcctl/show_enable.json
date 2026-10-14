@@ -1,0 +1,7 @@
+{"format_version":"1.2","resource_changes":[
+{"address":"aws_s3_bucket.logs","type":"aws_s3_bucket","change":{"actions":["create"]}},
+{"address":"aws_iam_role.ingest","type":"aws_iam_role","change":{"actions":["create"]}},
+{"address":"aws_iam_role_policy.ingest","type":"aws_iam_role_policy","change":{"actions":["create"]}},
+{"address":"aws_cloudtrail.main","type":"aws_cloudtrail","change":{"actions":["update"]}},
+{"address":"aws_sqs_queue.q","type":"aws_sqs_queue","change":{"actions":["no-op"]}},
+{"address":"data.aws_caller_identity.me","type":"aws_caller_identity","change":{"actions":["read"]}}]}

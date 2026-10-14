@@ -1,0 +1,36 @@
+{
+  "schema_version": "mc.logan-content.v1",
+  "source": {
+    "name": "GCP_VPC_FLOW_OCSF",
+    "display_name": "GCP VPC Flow (OCSF)",
+    "type_name": "os_file",
+    "description": "One allowlisted normalized GCP LogEntry per collector line.",
+    "is_for_cloud": false,
+    "parsers": [
+      "GCP_VPC_FLOW_OCSF_PARSER"
+    ],
+    "entity_types": [
+      {
+        "entity_type": "omc_host_linux"
+      }
+    ]
+  },
+  "catalog_mappings": {
+    "log.source": "Log Source",
+    "timestamp": "GCP Event Time",
+    "cloud.provider": "GCP Cloud Provider",
+    "cloud.account.uid": "GCP Project ID",
+    "cloud.region": "GCP Region",
+    "actor.user.name": "GCP Actor User Name",
+    "src_endpoint.ip": "GCP Source IP",
+    "activity_name": "GCP Activity Name",
+    "status": "GCP Status",
+    "resource": "GCP Resource",
+    "trace_id": "GCP Trace ID",
+    "event_uid": "GCP Event ID",
+    "service_name": "GCP Service Name",
+    "source_address": "GCP Source Address",
+    "dst_endpoint.ip": "GCP Destination IP",
+    "k8s.namespace.name": "GCP Kubernetes Namespace"
+  }
+}

@@ -1,0 +1,30 @@
+# Example allowlist for collectors/otel/generate.py. Placeholders only:
+# every credential-like value is an ${env:NAME} reference resolved at runtime.
+version: 1
+metrics_sink: monitoring        # monitoring | apm | both
+clouds:
+  aws:
+    enabled: true
+    interval: 300               # seconds, floor 300
+    identity: web_identity      # sdk_chain | web_identity (no static keys)
+    regions: [eu-central-1]
+    metrics:
+      - namespace: AWS/EC2
+        metric_name: CPUUtilization
+        stat: Average
+      - namespace: AWS/RDS
+        metric_name: DatabaseConnections
+        stat: Maximum
+  azure:
+    enabled: false
+    interval: 300
+    identity: workload_identity # workload_identity | managed_identity
+    metrics:
+      - service: Microsoft.Compute/virtualMachines
+        metric: Percentage CPU
+  gcp:
+    enabled: false
+    interval: 300
+    identity: adc               # adc | workload_identity
+    metrics:
+      - compute.googleapis.com/instance/cpu/utilization

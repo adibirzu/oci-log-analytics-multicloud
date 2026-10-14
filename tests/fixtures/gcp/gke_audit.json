@@ -1,0 +1,27 @@
+{
+  "logName": "projects/sample-project/logs/cloudaudit.googleapis.com%2Factivity",
+  "timestamp": "2026-01-01T00:00:00Z",
+  "insertId": "sample-event",
+  "resource": {
+    "type": "k8s_cluster",
+    "labels": {
+      "project_id": "sample-project",
+      "zone": "sample-zone"
+    }
+  },
+  "protoPayload": {
+    "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+    "serviceName": "k8s.io",
+    "methodName": "io.k8s.core.v1.pods.create",
+    "resourceName": "core/v1/namespaces/sample/pods/sample",
+    "authenticationInfo": {
+      "principalEmail": "operator@example.com"
+    },
+    "requestMetadata": {
+      "callerIp": "192.0.2.10"
+    },
+    "request": {
+      "untrusted_payload": "drop-me"
+    }
+  }
+}

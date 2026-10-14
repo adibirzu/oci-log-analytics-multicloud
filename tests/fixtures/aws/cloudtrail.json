@@ -1,0 +1,40 @@
+{
+  "Records": [
+    {
+      "eventVersion": "1.09",
+      "eventTime": "2026-01-01T00:00:00Z",
+      "eventSource": "ec2.amazonaws.com",
+      "eventName": "DescribeInstances",
+      "awsRegion": "us-east-1",
+      "recipientAccountId": "123456789012",
+      "userIdentity": {"type": "IAMUser", "accountId": "123456789012", "userName": "sample-operator"},
+      "sourceIPAddress": "192.0.2.10",
+      "requestID": "sample-request-1",
+      "eventID": "sample-event-1",
+      "resources": [{"ARN": "arn:aws:ec2:us-east-1:123456789012:instance/i-example", "type": "AWS::EC2::Instance"}]
+    },
+    {
+      "eventTime": "2026-01-01T00:01:00Z",
+      "eventSource": "s3.amazonaws.com",
+      "eventName": "GetObject",
+      "awsRegion": "us-east-1",
+      "recipientAccountId": "123456789012",
+      "userIdentity": {"type": "AssumedRole", "arn": "arn:aws:sts::123456789012:assumed-role/sample-role/sample-session", "sessionContext": {"sessionIssuer": {"userName": "sample-role"}}},
+      "sourceIPAddress": "198.51.100.20",
+      "errorCode": "AccessDenied",
+      "requestID": "sample-request-2",
+      "eventID": "sample-event-2",
+      "resources": [{"ARN": "arn:aws:s3:::sample-data/example.json"}]
+    },
+    {
+      "eventTime": "2026-01-01T00:02:00Z",
+      "eventSource": "lambda.amazonaws.com",
+      "eventName": "Invoke",
+      "awsRegion": "us-east-1",
+      "recipientAccountId": "123456789012",
+      "userIdentity": {"type": "AWSService", "invokedBy": "lambda.amazonaws.com"},
+      "sourceIPAddress": "lambda.amazonaws.com",
+      "eventID": "sample-event-3"
+    }
+  ]
+}

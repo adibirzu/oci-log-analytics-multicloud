@@ -1,0 +1,33 @@
+# Copy to mcctl.yaml (gitignored) or point MCCTL_CONFIG / --config at it.
+# Placeholders only: identifiers come from the environment as ${VAR}.
+# Optional guard: OCI profile -> the only compartment where mutations are allowed.
+# protected_profiles:
+#   <OCI_PROD_PROFILE>: <ALLOWED_COMPARTMENT_NAME>
+clouds:
+  aws:
+    account: ${AWS_ACCOUNT_ID}
+    region: <AWS_REGION>
+    signals: [logs]            # any of: logs, metrics, apm
+    var_file: <PATH_TO_AWS_TFVARS>
+    oci:
+      profile: <OCI_PROFILE>
+      tenancy_name: <OCI_TENANCY_NAME>
+      compartment_name: <OCI_COMPARTMENT_NAME>
+  azure:
+    account: ${AZURE_SUBSCRIPTION_ID}
+    region: <AZURE_REGION>
+    signals: [logs]
+    var_file: <PATH_TO_AZURE_TFVARS>
+    oci:
+      profile: <OCI_PROFILE>
+      tenancy_name: <OCI_TENANCY_NAME>
+      compartment_name: <OCI_COMPARTMENT_NAME>
+  gcp:
+    account: ${GCP_PROJECT_ID}
+    region: <GCP_REGION>
+    signals: [logs]
+    var_file: <PATH_TO_GCP_TFVARS>
+    oci:
+      profile: <OCI_PROFILE>
+      tenancy_name: <OCI_TENANCY_NAME>
+      compartment_name: <OCI_COMPARTMENT_NAME>

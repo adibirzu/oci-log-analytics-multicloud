@@ -1,0 +1,20 @@
+{
+  "logName": "projects/sample-project/logs/compute.googleapis.com%2Fvpc_flows",
+  "timestamp": "2026-01-01T00:00:00Z",
+  "insertId": "sample-event",
+  "resource": {
+    "type": "gce_subnetwork",
+    "labels": {
+      "project_id": "sample-project",
+      "zone": "sample-zone"
+    }
+  },
+  "jsonPayload": {
+    "connection": {
+      "src_ip": "198.51.100.20",
+      "dest_ip": "203.0.113.30"
+    },
+    "reporter": "SRC",
+    "untrusted_payload": "drop-me"
+  }
+}

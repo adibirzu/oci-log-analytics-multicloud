@@ -1,0 +1,4 @@
+{"format_version":"1.2","resource_changes":[
+{"address":"aws_s3_bucket.logs","type":"aws_s3_bucket","change":{"actions":["delete","create"]}},
+{"address":"aws_sqs_queue.q","type":"aws_sqs_queue","change":{"actions":["create","delete"]}},
+{"address":"aws_iam_role.old","type":"aws_iam_role","change":{"actions":["delete"]}}]}
