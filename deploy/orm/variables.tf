@@ -161,12 +161,12 @@ variable "metrics_sink" {
 # ---- Images ----------------------------------------------------------------
 variable "logs_collector_image" {
   type    = string
-  default = "__IMAGE_REGISTRY__/mc-logs-collector:latest"
+  default = "__IMAGE_REGISTRY__/oci-la-mc-logs-collector:__IMAGE_TAG__"
 }
 
 variable "metrics_bridge_image" {
   type    = string
-  default = "__IMAGE_REGISTRY__/mc-metrics-bridge:latest"
+  default = "__IMAGE_REGISTRY__/oci-la-mc-metrics-bridge:__IMAGE_TAG__"
 }
 
 variable "otel_collector_image" {

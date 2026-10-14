@@ -79,6 +79,7 @@ jobs:
       - name: Package ORM zip
         env:
           IMAGE_REGISTRY: ghcr.io/${{ steps.owner.outputs.lc }}
+          IMAGE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         run: bash scripts/build_orm_zip.sh
       - name: Attach ORM zip to release

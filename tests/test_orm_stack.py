@@ -108,7 +108,7 @@ def test_zip_build_substitutes_registry_token(tmp_path):
     assert "schema.yaml" in names and "templates/apm-gateway.yaml.tpl" in names
     assert not [n for n in names if ".terraform" in n or n.endswith(".tfstate")]
     variables = archive.read("variables.tf").decode()
-    assert "ghcr.io/example-owner/mc-logs-collector:latest" in variables
+    assert "ghcr.io/example-owner/oci-la-mc-logs-collector:latest" in variables
     assert "__IMAGE_REGISTRY__" not in "".join(archive.read(n).decode(errors="ignore") for n in names if not n.endswith("/"))
 
 
@@ -146,3 +146,15 @@ def test_terraform_validates_in_temp_copy(tmp_path):
     assert check.returncode == 0, check.stdout + check.stderr
     fmt = subprocess.run(["terraform", "fmt", "-check", "-recursive", "-no-color"], cwd=work, capture_output=True, text=True)
     assert fmt.returncode == 0, fmt.stdout
+
+
+def test_orm_image_names_match_published_images():
+    import re
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    workflow = (root / ".github/workflows/release.yml").read_text(encoding="utf-8")
+    published = set(re.findall(r"/(oci-la-mc-[a-z-]+):", workflow))
+    referenced = set(re.findall(r"__IMAGE_REGISTRY__/([a-z0-9-]+):__IMAGE_TAG__",
+                                (root / "deploy/orm/variables.tf").read_text(encoding="utf-8")))
+    assert referenced and referenced <= published, (referenced, published)

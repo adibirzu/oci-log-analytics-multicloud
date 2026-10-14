@@ -30,9 +30,15 @@ trap 'rm -rf "$STAGE"' EXIT
   cp "$SRC/$f" "$STAGE/$f"
 done
 
-# Substitute the registry token (| delimiter; IMAGE_REGISTRY is charset-checked above).
+# Image tag: the release passes its tag so the stack pins matching images; "latest" otherwise.
+IMAGE_TAG="${IMAGE_TAG:-latest}"
+case "$IMAGE_TAG" in
+  ""|*[!A-Za-z0-9._-]*) echo "error: IMAGE_TAG has unexpected characters" >&2; exit 2 ;;
+esac
+
+# Substitute the registry and tag tokens (| delimiter; values are charset-checked above).
 find "$STAGE" -type f \( -name '*.tf' -o -name '*.yaml' -o -name '*.tpl' \) | while IFS= read -r f; do
-  sed "s|$TOKEN|$IMAGE_REGISTRY|g" "$f" > "$f.new" && mv "$f.new" "$f"
+  sed -e "s|$TOKEN|$IMAGE_REGISTRY|g" -e "s|__IMAGE_TAG__|$IMAGE_TAG|g" "$f" > "$f.new" && mv "$f.new" "$f"
 done
 
 # Gate: no real-looking OCIDs or IPv4 addresses, no leftover token.
