@@ -60,9 +60,9 @@ processors:
       action: upsert
   batch: {}
 exporters:
-  otlphttp/bridge:
+  otlp_http/bridge:
     endpoint: ${env:METRICS_BRIDGE_ENDPOINT}
-  otlphttp/apm:
+  otlp_http/apm:
     metrics_endpoint: ${env:OCI_APM_ENDPOINT}/20200101/opentelemetry/v1/metrics
     headers:
       Authorization: dataKey ${env:OCI_APM_PRIVATE_DATAKEY}
@@ -77,8 +77,8 @@ service:
       - resource/aws
       - batch
       exporters:
-      - otlphttp/bridge
-      - otlphttp/apm
+      - otlp_http/bridge
+      - otlp_http/apm
     metrics/azure:
       receivers:
       - azuremonitor
@@ -87,8 +87,8 @@ service:
       - resource/azure
       - batch
       exporters:
-      - otlphttp/bridge
-      - otlphttp/apm
+      - otlp_http/bridge
+      - otlp_http/apm
     metrics/gcp:
       receivers:
       - googlecloudmonitoring
@@ -97,8 +97,8 @@ service:
       - resource/gcp
       - batch
       exporters:
-      - otlphttp/bridge
-      - otlphttp/apm
+      - otlp_http/bridge
+      - otlp_http/apm
   extensions:
   - azureauth
 extensions:

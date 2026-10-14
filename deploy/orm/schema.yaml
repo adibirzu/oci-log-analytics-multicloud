@@ -45,6 +45,10 @@ variableGroups:
       - apm_free_tier
       - apm_sampling_percent
       - metrics_sink
+  - title: "Vault"
+    variables:
+      - existing_vault_ocid
+      - existing_kms_key_ocid
   - title: "Container images"
     variables:
       - logs_collector_image
@@ -182,6 +186,26 @@ variables:
     description: "New log group name."
     type: string
     visible: {and: [enable_logs, {eq: [existing_log_group_ocid, ""]}]}
+  existing_vault_ocid:
+    title: "Existing vault (leave empty to create one)"
+    description: "Reuse a vault when the tenancy is at its vault limit. Requires a key in that vault."
+    type: oci:kms:vault:id
+    dependsOn:
+      compartmentId: ${compartment_ocid}
+    required: false
+  existing_kms_key_ocid:
+    title: "Key in the existing vault"
+    description: "Master encryption key used for the stack's secrets."
+    type: oci:kms:key:id
+    dependsOn:
+      compartmentId: ${compartment_ocid}
+      vaultId: ${existing_vault_ocid}
+    required: false
+    visible:
+      not:
+        - eq:
+          - ${existing_vault_ocid}
+          - ""
   existing_apm_domain_ocid:
     title: "Existing APM domain OCID (leave empty to create one)"
     description: "Existing APM domain OCID (leave empty to create one)."

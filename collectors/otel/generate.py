@@ -151,16 +151,16 @@ def _receivers_gcp(cfg: dict[str, Any]) -> dict[str, Any]:
 RECEIVER_BUILDERS = {"aws": _receivers_aws, "azure": _receivers_azure, "gcp": _receivers_gcp}
 CLOUD_PROVIDER = {"aws": "aws", "azure": "azure", "gcp": "gcp"}
 PIPELINE_EXPORTERS = {
-    "monitoring": ["otlphttp/bridge"],
-    "apm": ["otlphttp/apm"],
-    "both": ["otlphttp/bridge", "otlphttp/apm"],
+    "monitoring": ["otlp_http/bridge"],
+    "apm": ["otlp_http/apm"],
+    "both": ["otlp_http/bridge", "otlp_http/apm"],
 }
 
 
 def _exporters(sink: str) -> dict[str, Any]:
-    exporters: dict[str, Any] = {"otlphttp/bridge": {"endpoint": BRIDGE_ENDPOINT}}
+    exporters: dict[str, Any] = {"otlp_http/bridge": {"endpoint": BRIDGE_ENDPOINT}}
     if sink in ("apm", "both"):
-        exporters["otlphttp/apm"] = {
+        exporters["otlp_http/apm"] = {
             "metrics_endpoint": f"{APM_ENDPOINT}/20200101/opentelemetry/v1/metrics",
             "headers": {"Authorization": f"dataKey {APM_DATAKEY}"},
         }

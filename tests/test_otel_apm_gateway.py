@@ -80,7 +80,7 @@ def test_sampler_default_is_env_templated() -> None:
 
 
 def test_apm_endpoints_and_auth_header() -> None:
-    exporter = _config()["exporters"]["otlphttp/apm"]
+    exporter = _config()["exporters"]["otlp_http/apm"]
     assert exporter["traces_endpoint"] == (
         "${env:OCI_APM_ENDPOINT}/20200101/opentelemetry/private/v1/traces"
     )

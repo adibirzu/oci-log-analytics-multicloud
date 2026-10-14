@@ -36,6 +36,10 @@ Secrets and the container runtime: Container Instances support only `EMPTYDIR` a
 
 Resource Manager runs with the user's permissions. In the target compartment the user needs to manage: `log-analytics-features-family`, `loganalytics-log-group`, `apm-domains`, `vaults`, `keys`, `secret-family`, `virtual-network-family`, `compute-container-family`, `orm-stacks`, `orm-jobs`, `policies`. In the tenancy the user needs to manage `dynamic-groups` and `policies` (both live in the home region). Log Analytics must already be onboarded in the tenancy.
 
+## AWS operator role
+
+Apply `modules/bootstrap/aws-operator-role` once with admin credentials, then run `mcctl` through the least-privilege `mc-operator` profile instead of a broad admin role (see its README).
+
 ## Cost notes
 
 - Container Instance: billed per OCPU and GB while it runs (default 2 OCPU, 8 GB). Lower `container_ocpus` / `container_memory_gbs` for light use.
@@ -54,3 +58,14 @@ Log Analytics content (parsers, sources) and a reused log group or APM domain ar
 ## How mcctl fits
 
 The stack is the OCI half. `mcctl enable <cloud> --signal logs|metrics` creates the matching AWS, Azure or GCP half (queue, event hub or subscription, read-only metric identity, OIDC federation) and prints the identifiers that go into the stack's cloud inputs. Re-apply the stack after changing them.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `400-InvalidParameter, No permissions found` on the policy | A deprecated resource type in a statement (OCI rejects the whole policy without naming it) | The stack uses `loganalytics-log-group`; if you add statements, check each type against the current IAM reference |
+| `400-LimitExceeded` creating the vault | Tenancy is at its vault limit; vaults pending deletion still count for 7–30 days | Set **Existing vault** and **Key in the existing vault** in the Vault group, then re-plan |
+| Plan works but a cross-field rule fails late | Resource Manager runs Terraform 1.5, which cannot validate one variable against another | Read the precondition message on the failing resource and fix the paired inputs |
+| Metrics bridge/puller containers missing | They only run when at least one cloud is enabled | Enable AWS, Azure or GCP in the form |
+
+Tested end to end with Resource Manager: plan → apply (container `CONTAINER_RUNNING`, collector "Everything is ready") → destroy job.

@@ -212,3 +212,16 @@ variable "name_prefix" {
   type    = string
   default = "mc"
 }
+
+variable "existing_vault_ocid" {
+  description = "Reuse this vault instead of creating one (leave empty to create). Requires existing_kms_key_ocid."
+  type        = string
+  default     = ""
+}
+
+variable "existing_kms_key_ocid" {
+  description = "Master encryption key in existing_vault_ocid used for the stack's secrets."
+  type        = string
+  default     = ""
+
+}

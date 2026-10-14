@@ -112,14 +112,14 @@ def test_single_cloud_has_no_other_components() -> None:
     assert set(config["receivers"]) == {"awscloudwatch/eu-central-1"}
     assert "azuremonitor" not in config["receivers"]
     assert "googlecloudmonitoring" not in config["receivers"]
-    assert "otlphttp/apm" not in config["exporters"]  # default sink is monitoring
+    assert "otlp_http/apm" not in config["exporters"]  # default sink is monitoring
 
 
 def test_all_clouds_pipelines_and_sink() -> None:
     config = yaml.safe_load(render(_load(FIXTURES / "metrics-pull.all-clouds.yaml")))
     assert set(config["service"]["pipelines"]) == {"metrics/aws", "metrics/azure", "metrics/gcp"}
     for pipeline in config["service"]["pipelines"].values():
-        assert pipeline["exporters"] == ["otlphttp/bridge", "otlphttp/apm"]  # sink = both
+        assert pipeline["exporters"] == ["otlp_http/bridge", "otlp_http/apm"]  # sink = both
         assert pipeline["processors"] == ["memory_limiter", pipeline["processors"][1], "batch"]
 
 
@@ -128,13 +128,13 @@ def test_apm_sink_drops_bridge_from_pipelines() -> None:
     data["metrics_sink"] = "apm"
     config = yaml.safe_load(render(data))
     for pipeline in config["service"]["pipelines"].values():
-        assert pipeline["exporters"] == ["otlphttp/apm"]
+        assert pipeline["exporters"] == ["otlp_http/apm"]
 
 
 def test_no_literal_secrets_in_output() -> None:
     text = render(_load(FIXTURES / "metrics-pull.all-clouds.yaml"))
     config = yaml.safe_load(text)
-    assert config["exporters"]["otlphttp/apm"]["headers"]["Authorization"] == (
+    assert config["exporters"]["otlp_http/apm"]["headers"]["Authorization"] == (
         "dataKey ${env:OCI_APM_PRIVATE_DATAKEY}"
     )
     assert "AWS_SECRET" not in text and "client_secret" not in text

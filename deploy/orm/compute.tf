@@ -79,7 +79,7 @@ locals {
     aws_region    = var.aws_region
     sink          = local.sink
     receivers     = local.puller_receivers
-    exporters     = join(", ", local.sink == "monitoring" ? ["otlphttp/bridge"] : (local.sink == "apm" ? ["otlphttp/apm"] : ["otlphttp/bridge", "otlphttp/apm"]))
+    exporters     = join(", ", local.sink == "monitoring" ? ["otlp_http/bridge"] : (local.sink == "apm" ? ["otlp_http/apm"] : ["otlp_http/bridge", "otlp_http/apm"]))
   }) : ""
 
   puller_uses_apm = local.run_puller && local.sink != "monitoring"

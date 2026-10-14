@@ -34,3 +34,5 @@ Status: `todo` · `in_progress` · `local_green` (offline tests pass) · `live_g
 | MC-23 | APM gateway live: sample app → gateway → OCI APM; settle data-key type and metrics endpoint | todo |
 | MC-24 | Azure and GCP live round trips (needs owner subscription/project + federation) | todo |
 | MC-25 | Remote state backend option (OCI Object Storage S3-compatible) | todo |
+| MC-26 | ORM button stack live: plan → apply → container running → ORM teardown job (OCI scratch compartment) | live_green (vault reuse + policy type fixed) |
+| MC-27 | Least-privilege AWS operator role (`modules/bootstrap/aws-operator-role`) proven with a full mcctl round trip | live_green |

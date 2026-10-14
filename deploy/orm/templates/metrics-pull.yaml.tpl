@@ -61,11 +61,11 @@ processors:
   batch: {}
 exporters:
 %{ if sink != "apm" ~}
-  otlphttp/bridge:
+  otlp_http/bridge:
     endpoint: $${env:METRICS_BRIDGE_ENDPOINT}
 %{ endif ~}
 %{ if sink != "monitoring" ~}
-  otlphttp/apm:
+  otlp_http/apm:
     metrics_endpoint: $${env:OCI_APM_ENDPOINT}/20200101/opentelemetry/v1/metrics
     headers:
       Authorization: "dataKey $${env:OCI_APM_PRIVATE_DATAKEY}"

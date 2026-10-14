@@ -22,7 +22,7 @@ processors:
       action: upsert
   batch: {}
 exporters:
-  otlphttp/bridge:
+  otlp_http/bridge:
     endpoint: ${env:METRICS_BRIDGE_ENDPOINT}
 service:
   pipelines:
@@ -34,4 +34,4 @@ service:
       - resource/aws
       - batch
       exporters:
-      - otlphttp/bridge
+      - otlp_http/bridge

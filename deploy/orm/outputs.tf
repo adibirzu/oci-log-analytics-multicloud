@@ -20,7 +20,7 @@ output "container_instance_ocid" {
 
 output "vault_ocid" {
   description = "Vault holding the APM key and federation placeholders."
-  value       = local.need_vault ? oci_kms_vault.this[0].id : null
+  value       = local.need_vault ? local.vault_id : null
 }
 
 output "next_steps" {

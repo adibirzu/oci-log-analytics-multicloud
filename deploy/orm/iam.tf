@@ -17,7 +17,7 @@ resource "oci_identity_policy" "runtime" {
 
   statements = concat(
     var.enable_logs ? [
-      "allow dynamic-group ${oci_identity_dynamic_group.runtime[0].name} to use log-analytics-log-group in compartment id ${var.compartment_ocid}",
+      "allow dynamic-group ${oci_identity_dynamic_group.runtime[0].name} to use loganalytics-log-group in compartment id ${var.compartment_ocid}",
       "allow dynamic-group ${oci_identity_dynamic_group.runtime[0].name} to {LOG_ANALYTICS_LOG_GROUP_UPLOAD_LOGS} in compartment id ${var.compartment_ocid}",
     ] : [],
     local.run_bridge ? [

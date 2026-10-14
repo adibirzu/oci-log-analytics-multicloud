@@ -30,7 +30,7 @@ processors:
   batch: {}
 
 exporters:
-  otlphttp/apm:
+  otlp_http/apm:
     traces_endpoint: $${env:OCI_APM_ENDPOINT}/20200101/opentelemetry/private/v1/traces
     metrics_endpoint: $${env:OCI_APM_ENDPOINT}/20200101/opentelemetry/v1/metrics
     headers:
@@ -41,8 +41,8 @@ service:
     traces:
       receivers: [otlp]
       processors: [memory_limiter, filter/health, probabilistic_sampler, batch]
-      exporters: [otlphttp/apm]
+      exporters: [otlp_http/apm]
     metrics:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [otlphttp/apm]
+      exporters: [otlp_http/apm]
