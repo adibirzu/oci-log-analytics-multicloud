@@ -1,0 +1,26 @@
+Metadata-Version: 2.4
+Name: oci-log-analytics-multicloud
+Version: 0.1.0
+Summary: Centralize AWS, Azure and GCP logs, metrics and traces in OCI Log Analytics, Monitoring and APM.
+License-Expression: UPL-1.0
+Requires-Python: >=3.11
+License-File: LICENSE
+Requires-Dist: PyYAML<7,>=6
+Requires-Dist: oci<3,>=2.181.1
+Requires-Dist: typer>=0.12
+Requires-Dist: opentelemetry-proto>=1.27
+Requires-Dist: protobuf>=5
+Provides-Extra: aws
+Requires-Dist: boto3<2,>=1.35; extra == "aws"
+Provides-Extra: azure
+Requires-Dist: azure-eventhub<6,>=5.12; extra == "azure"
+Requires-Dist: azure-identity<2,>=1.17; extra == "azure"
+Requires-Dist: azure-eventhub-checkpointstoreblob<2,>=1.1; extra == "azure"
+Provides-Extra: gcp
+Requires-Dist: google-cloud-pubsub<3,>=2.23; extra == "gcp"
+Requires-Dist: google-auth<3,>=2.30; extra == "gcp"
+Provides-Extra: dev
+Requires-Dist: pytest>=8; extra == "dev"
+Requires-Dist: jsonschema>=4; extra == "dev"
+Requires-Dist: ruff>=0.6; extra == "dev"
+Dynamic: license-file

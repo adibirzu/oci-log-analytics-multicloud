@@ -1,9 +1,13 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "oci-log-analytics-multicloud"
 version = "0.1.0"
 description = "Centralize AWS, Azure and GCP logs, metrics and traces in OCI Log Analytics, Monitoring and APM."
 requires-python = ">=3.11"
-license = { text = "UPL-1.0" }
+license = "UPL-1.0"
 dependencies = ["PyYAML>=6,<7", "oci>=2.181.1,<3", "typer>=0.12", "opentelemetry-proto>=1.27", "protobuf>=5"]
 
 [project.optional-dependencies]
@@ -14,6 +18,13 @@ dev = ["pytest>=8", "jsonschema>=4", "ruff>=0.6"]
 
 [project.scripts]
 mcctl = "mcctl.cli:app"
+
+[tool.setuptools.packages.find]
+include = ["mcctl*", "collectors*"]
+
+[tool.setuptools.package-data]
+"collectors.logs" = ["catalog_data/*.yaml"]
+"collectors.otel" = ["*.yaml", "*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
