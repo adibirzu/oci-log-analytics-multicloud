@@ -53,7 +53,7 @@ tests/                          offline only; fakes for every cloud
 
 - Cloud side: OIDC federation only (AWS web identity role, Azure federated credential, GCP workload identity pool). Metric readers are read-only (`cloudwatch:GetMetricData/ListMetrics`, `Monitoring Reader`, `roles/monitoring.viewer`).
 - OCI side: resource or instance principal; policies scoped to one compartment. Operator API-key auth only with `INGEST_ALLOW_OPERATOR_AUTH=true` for supervised tests.
-- APM data key and any credential live in a vault and are injected as env; never in Terraform state or argv.
+- Vault-backed cloud assertions use private temporary files; see [the deployment guide](DEPLOY.md#vault-federation-for-log-collectors-mc-28-local-implementation-verified-live-and-release-gates-open) for rotation and isolation. The APM data-key handling and its Terraform-state exception are documented in [Secrets and the container runtime](DEPLOY.md#what-gets-created).
 
 ## Enable / disable (`mcctl`)
 

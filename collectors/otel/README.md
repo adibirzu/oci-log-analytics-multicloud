@@ -15,7 +15,7 @@ telemetry into OCI.
 
 - No static cloud keys. AWS uses the SDK chain or web identity, Azure uses
   workload or managed identity, GCP uses ADC or workload identity.
-- Every secret-like value is `${env:NAME}`. The generator refuses literal values
+- Generated configs reference secret-like values through `${env:NAME}`. The generator refuses literal values
   for keys named like `access_key`, `secret`, `client_secret`, `password`, `token`.
 - Metric polls are at least 300 s (cloud metric APIs bill per request). Metrics
   come from an explicit allowlist; an empty allowlist is rejected.
@@ -45,8 +45,13 @@ python3.11 -m pytest tests/test_otel_generate.py`; the tests are skipped without
   its semantics (aggregation or category) are not checked.
 - `googlecloudmonitoring`: `project_id`, `collection_interval`,
   `metrics_list: [{metric_name}]`; no extension needed (ADC).
-- The `azureauth` workload-identity file path is the AKS default
-  (`/var/run/secrets/azure/tokens/azure-identity-token`); it is a path, not a credential.
+- The generated `azureauth` workload-identity file path is
+  `${env:AZURE_FEDERATED_TOKEN_FILE}`. Supply that environment variable with the
+  projected token path when running without the Vault launcher. For Vault-backed
+  pullers, follow [the deployment guide](../../docs/DEPLOY.md#vault-federation-for-metric-pullers-mc-29-configured-provider-and-release-gates-open).
+  This path substitution is covered by
+  `tests/test_otel_generate.py::test_azure_workload_identity_uses_launcher_selected_file`;
+  the earlier binary validation above does not validate this workload-identity path.
 
 ## Unverified
 

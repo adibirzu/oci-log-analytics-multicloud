@@ -17,7 +17,7 @@ workload or OIDC federation) and settings come from the environment.
 - `v*` git tag: `<IMAGE>:<TAG>` and `<IMAGE>:latest`.
 - `workflow_dispatch` run: `<IMAGE>:sha-<SHORT_SHA>` only.
 
-Both images are built for `linux/amd64` and `linux/arm64`.
+All three images are built for `linux/amd64` and `linux/arm64`.
 
 ## Build locally
 
@@ -47,17 +47,15 @@ Every action is pinned to a full commit SHA with the tag in a trailing comment.
 ## Collector configs (OpenTelemetry Collector)
 
 The OTel federation image carries the upstream `otel/opentelemetry-collector-contrib:0.162.0`
-binary and runs one cloud identity per process. Supply `--cloud aws|azure|gcp --config <path>`. When
-`MC_FEDERATION_SECRET_OCID` is present, it materializes its short-lived Vault assertion only
-for that process; the GCP launcher also writes a mode-0600 external-account file. The ORM stack configures this image in isolated per-cloud Container Instances; image
-publication and provider validation remain open MC-29 gates. Mount the configs from `collectors/otel/` into the container:
+binary and runs one cloud identity per process. Mount a metrics-pull config generated
+by `collectors/otel/generate.py` for the selected cloud, then supply
+`--cloud aws|azure|gcp --config <path>`. See
+[Vault federation for metric pullers](../docs/DEPLOY.md#vault-federation-for-metric-pullers-mc-29-configured-provider-and-release-gates-open)
+for identity inputs, assertion handling and acceptance limits.
 
-- `collectors/otel/apm-gateway.yaml` at `/etc/otelcol-contrib/config.yaml`.
-- The generated metrics-pull config (`collectors/otel/generate.py` output) at the same path
-  for the pull pipeline.
-
-Secret-like values are `${env:NAME}` references and are supplied as environment
-variables at runtime, never inline.
+The APM gateway uses the upstream collector image directly with
+`collectors/otel/apm-gateway.yaml` mounted at `/etc/otelcol-contrib/config.yaml`.
+See [collector configuration](../collectors/otel/README.md) for its runtime variables.
 
 ## Consuming the images from ORM
 

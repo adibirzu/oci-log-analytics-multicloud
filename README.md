@@ -26,6 +26,9 @@ cp mcctl.example.yaml mcctl.yaml                        # ${VAR} references reso
 
 State lives under `~/.mcctl/state/<cloud>/<account>/<signal>.tfstate`. See `docs/ARCHITECTURE.md` and `docs/TASKS.md`.
 
+For OCI-side deployment, per-signal cloud identities and Vault-backed federation,
+follow the [deployment guide](docs/DEPLOY.md).
+
 ## Provenance
 
 - `collectors/logs/`, `modules/logs/{aws,azure,gcp}/terraform`, `content/logan/` — multi-cloud log collector, per-cloud Terraform and Log Analytics content.

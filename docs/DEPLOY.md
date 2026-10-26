@@ -23,7 +23,7 @@ Each resource is created only when its toggle needs it.
 | Toggle | Resources |
 |---|---|
 | `enable_logs` | Log Analytics log group (or reuse `existing_log_group_ocid`); one logs-collector container per enabled cloud |
-| `enable_metrics` | metrics bridge (OCI Monitoring `custom_*` namespaces) and an OTel metrics-pull collector |
+| `enable_metrics` | metrics bridge (OCI Monitoring `custom_*` namespaces) and one OTel metrics puller per enabled cloud; requires at least one enabled cloud |
 | `enable_apm` | APM domain (free tier toggle, or reuse an existing domain), OTLP gateway collector, vault secret with the private data key |
 | any cloud | Vault, key, and one placeholder federation secret per cloud |
 | any signal | Compartment-scoped IAM; one isolated Container Instance per enabled log cloud, one isolated metrics puller per enabled cloud, and a shared bridge/APM instance when enabled; and (unless `existing_subnet_ocid` is set) a minimal VCN with private subnet, NAT and service gateway |
@@ -40,7 +40,6 @@ Signal identities are separate stack inputs, including for single-signal deploym
 | `azure_metrics_client_id` | Azure metrics `client_id` |
 
 Replace the former shared `aws_role_arn` and `azure_client_id` inputs with the matching per-signal inputs. Defaults are empty; Terraform refuses to render an enabled signal whose AWS role or Azure client is empty or whitespace. Disabled signals need no identity, and an enabled signal never borrows the other signal's identity. Azure tenant and subscription inputs remain shared.
-
 
 Secrets and the container runtime: Container Instances support only `EMPTYDIR` and `CONFIGFILE` volumes, so vault secrets cannot be mounted. Log collectors resolve `MC_FEDERATION_SECRET_OCID` using the configured resource/instance principal, fetch the CURRENT bundle, and supply a private temporary OIDC token file to the selected cloud SDK. The one exception is the APM private data key for the OTel gateway and APM metrics sink: OTel Collector reads only environment variables, so the key is passed as an environment variable and also exists in the stack state. Restrict who can read the stack state and job outputs.
 
