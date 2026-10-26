@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import os
 import time
 
 from .config import CollectorConfig
@@ -15,12 +16,22 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     suppress_sdk_payload_logging()
+    from collectors.common.federation import federation_environment
+    try:
+        with federation_environment(args.source, os.environ) as env:
+            return run_source(args, env, parser)
+    except Exception:
+        logging.error("ingest_configuration_or_identity_unavailable")
+        return 2
+
+
+def run_source(args, env, parser) -> int:
     if args.source == "azure":
         if args.once:
             parser.error("--once is supported by the AWS and GCP queue adapters only")
         from .sources.azure_eventhub import AzureCollectorConfig, build_azure_runtime, receive_azure
         try:
-            adapter, consumer, credential = build_azure_runtime(AzureCollectorConfig.from_env())
+            adapter, consumer, credential = build_azure_runtime(AzureCollectorConfig.from_env(env), env=env)
             try:
                 return receive_azure(adapter, consumer)
             finally:
@@ -31,7 +42,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.source == "gcp":
         from .sources.gcp_pubsub import GCPCollectorConfig, build_gcp_runtime
         try:
-            collector = build_gcp_runtime(GCPCollectorConfig.from_env())
+            collector = build_gcp_runtime(GCPCollectorConfig.from_env(env), env=env)
         except Exception:
             logging.error("ingest_configuration_or_identity_unavailable")
             return 2
@@ -43,7 +54,7 @@ def main(argv: list[str] | None = None) -> int:
             finally:
                 collector.publisher.stop()
     try:
-        collector = build_collector(CollectorConfig.from_env())
+        collector = build_collector(CollectorConfig.from_env(env))
     except Exception:
         logging.error("ingest_configuration_or_identity_unavailable")
         return 2

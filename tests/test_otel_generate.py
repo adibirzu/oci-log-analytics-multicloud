@@ -199,3 +199,12 @@ def test_azure_metrics_use_namespace_metric_aggregation_shape() -> None:
         assert namespace == namespace.lower()
         assert "default" not in by_metric  # metric names map to aggregation lists
         assert all(isinstance(aggs, list) for aggs in by_metric.values())
+
+
+def test_azure_workload_identity_uses_launcher_selected_file() -> None:
+    data = _base()
+    data["clouds"]["azure"]["identity"] = "workload_identity"
+    config = yaml.safe_load(render(data))
+    identity = config["extensions"]["azureauth"]["workload_identity"]
+    assert identity["federated_token_file"] == "${env:AZURE_FEDERATED_TOKEN_FILE}"
+    assert "azureauth" in config["service"]["extensions"]

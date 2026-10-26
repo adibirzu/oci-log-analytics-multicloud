@@ -1,5 +1,6 @@
 """Static and packaging checks for the Resource Manager stack in deploy/orm."""
 
+import json
 import re
 import shutil
 import subprocess
@@ -148,13 +149,94 @@ def test_terraform_validates_in_temp_copy(tmp_path):
     assert fmt.returncode == 0, fmt.stdout
 
 
-def test_orm_image_names_match_published_images():
-    import re
-    from pathlib import Path
+@pytest.mark.parametrize("image", ["logs-collector", "metrics-bridge", "otel-federation"])
+def test_release_builds_orm_images_for_both_architectures(image):
+    workflow = yaml.safe_load((ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8"))
+    job = workflow["jobs"]["images"]
+    assert job["runs-on"]
+    assert job.get("if", True) is True
+    builds = [
+        step for step in job["steps"]
+        if step.get("uses", "").partition("@")[0] == "docker/build-push-action"
+        and step.get("with", {}).get("file") == f"container/{image}.Dockerfile"
+    ]
+    assert len(builds) == 1
+    step = builds[0]
+    assert step.get("if", True) is True
+    settings = step["with"]
+    assert settings["context"] == "."
+    assert {platform.strip() for platform in settings["platforms"].split(",")} == {"linux/amd64", "linux/arm64"}
+    assert settings["push"] is True
+    tags = [tag.strip() for tag in settings["tags"].splitlines() if tag.strip()]
+    assert tags == [
+        "ghcr.io/${{ steps.owner.outputs.lc }}/oci-la-mc-" + image + ":${{ steps.ver.outputs.version }}",
+        "${{ startsWith(github.ref, 'refs/tags/v') && format('ghcr.io/{0}/oci-la-mc-"
+        + image + ":latest', steps.owner.outputs.lc) || '' }}",
+    ]
 
-    root = Path(__file__).resolve().parents[1]
-    workflow = (root / ".github/workflows/release.yml").read_text(encoding="utf-8")
-    published = set(re.findall(r"/(oci-la-mc-[a-z-]+):", workflow))
-    referenced = set(re.findall(r"__IMAGE_REGISTRY__/([a-z0-9-]+):__IMAGE_TAG__",
-                                (root / "deploy/orm/variables.tf").read_text(encoding="utf-8")))
-    assert referenced and referenced <= published, (referenced, published)
+
+@pytest.mark.skipif(shutil.which("terraform") is None, reason="terraform not installed")
+@pytest.mark.parametrize("cloud,missing_identity", [("aws", False), ("azure", False), ("gcp", False),
+                                                   ("aws", True), ("azure", True)])
+@pytest.mark.parametrize("logs,metrics", [(True, True), (True, False), (False, True)])
+def test_signal_environments_render_with_separate_identities(tmp_path, cloud, logs, metrics, missing_identity):
+    main_locals = "locals {" + (ORM / "main.tf").read_text().split("locals {", 1)[1]
+    compute_locals = (ORM / "compute.tf").read_text().split('\nresource "', 1)[0]
+    configuration = main_locals + "\n" + compute_locals
+    for external in ("data", "oci_vault_secret", "oci_container_instances_container_instance"):
+        configuration = configuration.replace(external + ".", "var." + external + ".")
+    (tmp_path / "main.tf").write_text(configuration + '\nlocals {\n  log_group_ocid = "<LOG_GROUP>"\n  apm_endpoint = "<APM_ENDPOINT>"\n  apm_private_key = "<APM_KEY>"\n}\n')
+    shutil.copyfile(ORM / "variables.tf", tmp_path / "variables.tf")
+    fakes = {
+        "data": {
+            "oci_objectstorage_namespace": {"this": {"namespace": "<NAMESPACE>"}},
+            "oci_identity_availability_domains": {"this": {"availability_domains": [{"name": "<AD>"}]}},
+        },
+        "oci_vault_secret": {"federation": {cloud: {"id": "<SECRET_ID>"}}},
+        "oci_container_instances_container_instance": {"runtime": [{"vnics": [{"private_ip": "<BRIDGE_HOST>"}]}]},
+    }
+    (tmp_path / "fakes.tf").write_text("\n".join(
+        f'variable "{name}" {{ default = {json.dumps(value)} }}' for name, value in fakes.items()
+    ))
+    shutil.copytree(ORM / "templates", tmp_path / "templates")
+    provider = "projects/" + "123" + "/locations/global/workloadIdentityPools/"
+    inputs = {
+        "region": "<REGION>", "tenancy_ocid": "<TENANCY>", "compartment_ocid": "<COMPARTMENT>",
+        f"enable_{cloud}": True, "enable_logs": logs, "enable_metrics": metrics,
+        "gcp_logs_wif_provider_resource": provider + "logs/providers/logs",
+        "gcp_metrics_wif_provider_resource": provider + "metrics/providers/metrics",
+        "gcp_metrics_service_account_email": "reader@" + "example-project" + ".iam.gserviceaccount.com",
+    }
+    identities = {
+        "aws": ("AWS_ROLE_ARN", "aws_{}_role_arn"),
+        "azure": ("AZURE_CLIENT_ID", "azure_{}_client_id"),
+        "gcp": ("GCP_WIF_PROVIDER_RESOURCE", "gcp_{}_wif_provider_resource"),
+    }
+    env_key, input_key = identities[cloud]
+    for signal, enabled in (("logs", logs), ("metrics", metrics)):
+        if enabled and cloud != "gcp":
+            inputs[input_key.format(signal)] = f"<SYNTHETIC_{signal.upper()}_IDENTITY>"
+    if missing_identity:
+        inputs.pop(input_key.format("logs" if logs else "metrics"))
+    (tmp_path / "terraform.tfvars.json").write_text(json.dumps(inputs))
+    validation = subprocess.run(["terraform", "validate", "-no-color"], cwd=tmp_path, text=True, capture_output=True)
+    assert validation.returncode == 0, validation.stderr
+    result = subprocess.run(
+        ["terraform", "console", "-no-color"], cwd=tmp_path, text=True, capture_output=True,
+        input='jsonencode({logs = local.logs_containers, metrics = local.metrics_pullers})\n',
+    )
+    if missing_identity:
+        assert "no non-null, non-empty-string arguments" in result.stderr
+        with pytest.raises(json.JSONDecodeError):
+            json.loads(result.stdout)
+        return
+    assert result.returncode == 0, result.stderr
+    rendered = json.loads(json.loads(result.stdout))
+    assert set(rendered["logs"]) == ({cloud} if logs else set())
+    assert set(rendered["metrics"]) == ({cloud} if metrics else set())
+    for signal, enabled in (("logs", logs), ("metrics", metrics)):
+        if enabled:
+            env = rendered[signal][cloud]["env"]
+            assert env[env_key] == inputs[input_key.format(signal)]
+            if cloud == "gcp" and signal == "metrics":
+                assert env["GCP_METRICS_SERVICE_ACCOUNT_EMAIL"] == inputs["gcp_metrics_service_account_email"]

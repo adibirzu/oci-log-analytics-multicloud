@@ -19,22 +19,33 @@ variableGroups:
       - aws_region
       - aws_queue_url
       - aws_dlq_url
-      - aws_role_arn
+      - aws_logs_role_arn
+      - aws_metrics_role_arn
       - aws_s3_bucket
       - aws_s3_prefix
   - title: "Azure"
     variables:
       - enable_azure
       - azure_tenant_id
-      - azure_client_id
+      - azure_logs_client_id
+      - azure_metrics_client_id
       - azure_subscription_id
       - azure_eventhub_namespace
       - azure_eventhub_name
+      - azure_consumer_group
+      - azure_checkpoint_account_url
+      - azure_checkpoint_container
+      - azure_dlq_directory
   - title: "GCP"
     variables:
       - enable_gcp
       - gcp_project_id
       - gcp_subscription
+      - gcp_dlq_topic
+      - gcp_dlq_directory
+      - gcp_logs_wif_provider_resource
+      - gcp_metrics_wif_provider_resource
+      - gcp_metrics_service_account_email
   - title: "Log Analytics"
     variables:
       - existing_log_group_ocid
@@ -54,6 +65,7 @@ variableGroups:
       - logs_collector_image
       - metrics_bridge_image
       - otel_collector_image
+      - otel_federation_image
   - title: "Runtime and network"
     variables:
       - container_shape
@@ -117,9 +129,15 @@ variables:
     description: "SQS dead-letter queue URL."
     type: string
     visible: enable_aws
-  aws_role_arn:
-    title: "IAM role ARN assumed through web identity federation"
-    description: "Role the collector assumes through OIDC web identity federation. No access keys are ever entered here."
+  aws_logs_role_arn:
+    title: "AWS logs role arn"
+    description: "role_arn output from mcctl enable aws --signal logs; required when this signal is enabled."
+    type: string
+    visible: enable_aws
+    required: false
+  aws_metrics_role_arn:
+    title: "AWS metrics role arn"
+    description: "role_arn output from mcctl enable aws --signal metrics; required when this signal is enabled."
     type: string
     visible: enable_aws
     required: false
@@ -142,11 +160,18 @@ variables:
     description: "Azure tenant ID."
     type: string
     visible: enable_azure
-  azure_client_id:
-    title: "Federated app registration (client) ID"
-    description: "App registration with a federated credential. No client secrets are ever entered here."
+  azure_logs_client_id:
+    title: "AZURE logs client id"
+    description: "collector_client_id output from mcctl enable azure --signal logs; required when this signal is enabled."
     type: string
     visible: enable_azure
+    required: false
+  azure_metrics_client_id:
+    title: "AZURE metrics client id"
+    description: "client_id output from mcctl enable azure --signal metrics; required when this signal is enabled."
+    type: string
+    visible: enable_azure
+    required: false
   azure_subscription_id:
     title: "Azure subscription ID"
     description: "Azure subscription ID."
@@ -240,6 +265,11 @@ variables:
     title: "OpenTelemetry Collector Contrib image (pinned)"
     description: "OpenTelemetry Collector Contrib image (pinned)."
     type: string
+  otel_federation_image:
+    title: "Vault-aware OpenTelemetry Collector image"
+    description: "Per-cloud OTel launcher that reads only its assigned rotating Vault assertion."
+    type: string
+    visible: enable_metrics
   container_shape:
     title: "Container instance shape"
     description: "Container instance shape."
@@ -271,3 +301,48 @@ variables:
   tenancy_ocid:
     type: string
     visible: false
+  azure_checkpoint_account_url:
+    title: "Azure checkpoint account url"
+    description: "HTTPS Blob Storage account URL for durable Event Hubs checkpoints."
+    type: string
+    visible: enable_azure
+  azure_checkpoint_container:
+    title: "Azure checkpoint container"
+    description: "Existing Blob Storage container accessible to the federated identity."
+    type: string
+    visible: enable_azure
+  azure_dlq_directory:
+    title: "Azure dlq directory"
+    description: "Private local directory for poison envelopes; persists only for container lifetime."
+    type: string
+    visible: enable_azure
+  gcp_logs_wif_provider_resource:
+    title: "GCP logs WIF provider resource"
+    description: "workload_identity_provider_resource output from mcctl enable gcp --signal logs."
+    type: string
+    visible: enable_gcp
+  gcp_metrics_wif_provider_resource:
+    title: "GCP metrics WIF provider resource"
+    description: "workload_identity_provider output from mcctl enable gcp --signal metrics."
+    type: string
+    visible: enable_gcp
+  gcp_metrics_service_account_email:
+    title: "GCP metrics reader service account"
+    description: "service_account_email output from mcctl enable gcp --signal metrics; impersonated by the metric puller."
+    type: string
+    visible: enable_gcp
+  gcp_dlq_topic:
+    title: "Gcp dlq topic"
+    description: "Exact projects/<PROJECT>/topics/<TOPIC> dead-letter topic in the subscription project."
+    type: string
+    visible: enable_gcp
+  gcp_dlq_directory:
+    title: "Gcp dlq directory"
+    description: "Private local directory for poison envelopes; persists only for container lifetime."
+    type: string
+    visible: enable_gcp
+  azure_consumer_group:
+    title: "Event Hubs consumer group"
+    description: "Existing consumer group assigned to this collector."
+    type: string
+    visible: enable_azure

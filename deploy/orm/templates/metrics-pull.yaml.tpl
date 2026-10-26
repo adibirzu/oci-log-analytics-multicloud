@@ -36,7 +36,7 @@ extensions:
     workload_identity:
       tenant_id: "$${env:AZURE_TENANT_ID}"
       client_id: "$${env:AZURE_CLIENT_ID}"
-      federated_token_file: /var/run/secrets/azure/tokens/azure-identity-token
+      federated_token_file: "$${env:AZURE_FEDERATED_TOKEN_FILE}"
 %{ endif ~}
 processors:
   memory_limiter:

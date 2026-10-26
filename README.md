@@ -7,8 +7,8 @@ Centralize AWS, Azure and GCP telemetry in Oracle Cloud Infrastructure:
 | Signal | Destination | Status |
 |---|---|---|
 | Logs | OCI Log Analytics | AWS CloudTrail live-proven; Azure Event Hubs and GCP Pub/Sub collectors ported |
-| Metrics | OCI Monitoring | Prometheus exporters + OTel (seeded from `oci-prometheus-otel-monitoring`); cloud-native metric pulls planned |
-| Traces / APM | OCI APM (OTLP) | planned |
+| Metrics | OCI Monitoring | Bridge and cloud-native pull configurations implemented locally; live monitoring acceptance pending (MC-22) |
+| Traces / APM | OCI APM (OTLP) | Gateway and ORM integration implemented locally; live end-to-end acceptance pending (MC-23) |
 
 Every cloud integration can be enabled and disabled on demand so idle test stacks cost nothing.
 
@@ -25,6 +25,9 @@ cp mcctl.example.yaml mcctl.yaml                        # ${VAR} references reso
 ```
 
 State lives under `~/.mcctl/state/<cloud>/<account>/<signal>.tfstate`. See `docs/ARCHITECTURE.md` and `docs/TASKS.md`.
+
+For OCI-side deployment, per-signal cloud identities and Vault-backed federation,
+follow the [deployment guide](docs/DEPLOY.md).
 
 ## Provenance
 

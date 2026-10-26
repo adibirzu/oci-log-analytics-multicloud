@@ -57,7 +57,7 @@ resource "oci_vault_secret" "federation" {
   vault_id       = local.vault_id
   key_id         = local.kms_key_id
   secret_name    = "${local.name}-${each.key}-federation"
-  description    = "Placeholder for the ${each.key} OIDC federation token"
+  description    = "Rotating OIDC JWT for ${each.key}; replace PLACEHOLDER out of band"
 
   secret_content {
     content_type = "BASE64"

@@ -51,12 +51,24 @@ resource "oci_core_route_table" "this" {
   }
 }
 
-# Egress only: nothing in the stack accepts inbound connections.
+# Only metric pullers need inbound OTLP access within a newly created subnet.
 resource "oci_core_security_list" "this" {
   count          = local.create_vcn ? 1 : 0
   compartment_id = var.compartment_ocid
   vcn_id         = oci_core_vcn.this[0].id
   display_name   = "${local.name}-private-sl"
+
+  dynamic "ingress_security_rules" {
+    for_each = local.run_puller ? [1] : []
+    content {
+      source   = var.vcn_cidr
+      protocol = "6"
+      tcp_options {
+        min = 4319
+        max = 4319
+      }
+    }
+  }
 
   egress_security_rules {
     destination = "0.0.0.0/0"

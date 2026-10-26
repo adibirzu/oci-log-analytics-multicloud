@@ -59,9 +59,16 @@ variable "aws_dlq_url" {
   default = ""
 }
 
-variable "aws_role_arn" {
-  type    = string
-  default = ""
+variable "aws_logs_role_arn" {
+  type        = string
+  default     = ""
+  description = "role_arn output from mcctl enable aws --signal logs; required when this signal is enabled."
+}
+
+variable "aws_metrics_role_arn" {
+  type        = string
+  default     = ""
+  description = "role_arn output from mcctl enable aws --signal metrics; required when this signal is enabled."
 }
 
 variable "aws_s3_bucket" {
@@ -84,9 +91,16 @@ variable "azure_tenant_id" {
   default = ""
 }
 
-variable "azure_client_id" {
-  type    = string
-  default = ""
+variable "azure_logs_client_id" {
+  type        = string
+  default     = ""
+  description = "collector_client_id output from mcctl enable azure --signal logs; required when this signal is enabled."
+}
+
+variable "azure_metrics_client_id" {
+  type        = string
+  default     = ""
+  description = "client_id output from mcctl enable azure --signal metrics; required when this signal is enabled."
 }
 
 variable "azure_subscription_id" {
@@ -174,6 +188,12 @@ variable "otel_collector_image" {
   default = "ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.162.0"
 }
 
+variable "otel_federation_image" {
+  type        = string
+  default     = "__IMAGE_REGISTRY__/oci-la-mc-otel-federation:__IMAGE_TAG__"
+  description = "Vault-aware OTel launcher image used by the isolated per-cloud metric pullers."
+}
+
 # ---- Runtime ---------------------------------------------------------------
 variable "container_shape" {
   type    = string
@@ -224,4 +244,58 @@ variable "existing_kms_key_ocid" {
   type        = string
   default     = ""
 
+}
+
+variable "azure_checkpoint_account_url" {
+  type        = string
+  default     = ""
+  description = "HTTPS Blob Storage account URL for durable Event Hubs checkpoints."
+}
+
+variable "azure_checkpoint_container" {
+  type        = string
+  default     = ""
+  description = "Existing Blob Storage container accessible to the federated identity."
+}
+
+variable "azure_dlq_directory" {
+  type        = string
+  default     = "/tmp/mc-azure-poison"
+  description = "Private local directory for poison envelopes; persists only for container lifetime."
+}
+
+variable "gcp_logs_wif_provider_resource" {
+  type        = string
+  default     = ""
+  description = "workload_identity_provider_resource output from mcctl enable gcp --signal logs."
+}
+
+variable "gcp_metrics_wif_provider_resource" {
+  type        = string
+  default     = ""
+  description = "workload_identity_provider output from mcctl enable gcp --signal metrics."
+}
+
+variable "gcp_metrics_service_account_email" {
+  type        = string
+  default     = ""
+  description = "service_account_email output from mcctl enable gcp --signal metrics; impersonated by the metric puller."
+}
+
+variable "gcp_dlq_topic" {
+  type        = string
+  default     = ""
+  description = "Exact projects/<PROJECT>/topics/<TOPIC> dead-letter topic in the subscription project."
+}
+
+variable "gcp_dlq_directory" {
+  type        = string
+  default     = "/tmp/mc-gcp-poison"
+  description = "Private local directory for poison envelopes; persists only for container lifetime."
+}
+
+variable "azure_consumer_group" {
+  type        = string
+  default     = ""
+  description = "Existing Event Hubs consumer group assigned to this collector."
 }

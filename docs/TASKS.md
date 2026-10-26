@@ -36,3 +36,10 @@ Status: `todo` · `in_progress` · `local_green` (offline tests pass) · `live_g
 | MC-25 | Remote state backend option (OCI Object Storage S3-compatible) | todo |
 | MC-26 | ORM button stack live: plan → apply → container running → ORM teardown job (OCI scratch compartment) | live_green (vault reuse + policy type fixed) |
 | MC-27 | Least-privilege AWS operator role (`modules/bootstrap/aws-operator-role`) proven with a full mcctl round trip | live_green |
+
+## Local follow-up
+
+| ID | Task | Status |
+|---|---|---|
+| MC-28 **S** | Log collectors: rotating Vault OIDC JWT, private token files, per-cloud scoped IAM, ORM inputs and fail-closed startup | in_progress — offline assertion lifecycle implemented; ORM isolation configured; issuer operation, image release, IAM propagation and live exchange remain open |
+| MC-29 **S** | Per-cloud OTel metrics-pull Vault bootstrap/rotation with explicit cloud SDK identity configuration | in_progress — offline launcher tests pass; per-cloud ORM isolation configured; image release and provider validation remain open |

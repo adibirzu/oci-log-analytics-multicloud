@@ -358,8 +358,8 @@ def test_cli_gcp_once_uses_shared_poll_loop_and_closes_clients(tmp_path, monkeyp
     adapter, calls, subscriber, _ = pipeline(tmp_path)
     subscriber.response = [message()]
     subscriber.close = lambda: calls.append(("subscriber_close", None))
-    monkeypatch.setattr(gcp.GCPCollectorConfig, "from_env", lambda: adapter.config)
-    monkeypatch.setattr(gcp, "build_gcp_runtime", lambda cfg: adapter)
+    monkeypatch.setattr(gcp.GCPCollectorConfig, "from_env", lambda env=None: adapter.config)
+    monkeypatch.setattr(gcp, "build_gcp_runtime", lambda cfg, env=None: adapter)
     assert main(["--source", "gcp", "--once"]) == 0
     assert [call[0] for call in calls] == ["pull", "lease", "upload", "ack", "subscriber_close", "publisher_stop"]
 
