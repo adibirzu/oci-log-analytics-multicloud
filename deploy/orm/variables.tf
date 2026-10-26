@@ -59,9 +59,16 @@ variable "aws_dlq_url" {
   default = ""
 }
 
-variable "aws_role_arn" {
-  type    = string
-  default = ""
+variable "aws_logs_role_arn" {
+  type        = string
+  default     = ""
+  description = "role_arn output from mcctl enable aws --signal logs; required when this signal is enabled."
+}
+
+variable "aws_metrics_role_arn" {
+  type        = string
+  default     = ""
+  description = "role_arn output from mcctl enable aws --signal metrics; required when this signal is enabled."
 }
 
 variable "aws_s3_bucket" {
@@ -84,9 +91,16 @@ variable "azure_tenant_id" {
   default = ""
 }
 
-variable "azure_client_id" {
-  type    = string
-  default = ""
+variable "azure_logs_client_id" {
+  type        = string
+  default     = ""
+  description = "collector_client_id output from mcctl enable azure --signal logs; required when this signal is enabled."
+}
+
+variable "azure_metrics_client_id" {
+  type        = string
+  default     = ""
+  description = "client_id output from mcctl enable azure --signal metrics; required when this signal is enabled."
 }
 
 variable "azure_subscription_id" {

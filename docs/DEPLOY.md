@@ -30,6 +30,18 @@ Each resource is created only when its toggle needs it.
 
 Cloud inputs are non-secret identifiers only (account, tenant, project, queue, event hub). Authentication to AWS, Azure and GCP uses OIDC federation; never enter keys or secrets as stack variables.
 
+Signal identities are separate stack inputs, including for single-signal deployments:
+
+| Input | Output from matching `mcctl enable` module |
+|---|---|
+| `aws_logs_role_arn` | AWS logs `role_arn` |
+| `aws_metrics_role_arn` | AWS metrics `role_arn` |
+| `azure_logs_client_id` | Azure logs `collector_client_id` |
+| `azure_metrics_client_id` | Azure metrics `client_id` |
+
+Replace the former shared `aws_role_arn` and `azure_client_id` inputs with the matching per-signal inputs. Defaults are empty; Terraform refuses to render an enabled signal whose AWS role or Azure client is empty or whitespace. Disabled signals need no identity, and an enabled signal never borrows the other signal's identity. Azure tenant and subscription inputs remain shared.
+
+
 Secrets and the container runtime: Container Instances support only `EMPTYDIR` and `CONFIGFILE` volumes, so vault secrets cannot be mounted. Log collectors resolve `MC_FEDERATION_SECRET_OCID` using the configured resource/instance principal, fetch the CURRENT bundle, and supply a private temporary OIDC token file to the selected cloud SDK. The one exception is the APM private data key for the OTel gateway and APM metrics sink: OTel Collector reads only environment variables, so the key is passed as an environment variable and also exists in the stack state. Restrict who can read the stack state and job outputs.
 
 ## Required IAM for the deploying user

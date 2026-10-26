@@ -16,14 +16,12 @@ locals {
       AWS_REGION        = var.aws_region
       AWS_SQS_QUEUE_URL = var.aws_queue_url
       AWS_SQS_DLQ_URL   = var.aws_dlq_url
-      AWS_ROLE_ARN      = var.aws_role_arn
       AWS_S3_BUCKET     = var.aws_s3_bucket
       AWS_S3_PREFIX     = var.aws_s3_prefix
       AWS_AUTH_MODE     = "web_identity"
     }
     azure = {
       AZURE_TENANT_ID               = var.azure_tenant_id
-      AZURE_CLIENT_ID               = var.azure_client_id
       AZURE_SUBSCRIPTION_ID         = var.azure_subscription_id
       AZURE_EVENTHUB_NAMESPACE      = var.azure_eventhub_namespace
       AZURE_EVENTHUB_NAME           = var.azure_eventhub_name
@@ -49,6 +47,8 @@ locals {
       env = merge(
         local.common_env,
         { LOGAN_LOG_GROUP_OCID = local.log_group_ocid },
+        c == "aws" ? { AWS_ROLE_ARN = coalesce(trimspace(var.aws_logs_role_arn)) } : {},
+        c == "azure" ? { AZURE_CLIENT_ID = coalesce(trimspace(var.azure_logs_client_id)) } : {},
         c == "gcp" ? { GCP_WIF_PROVIDER_RESOURCE = var.gcp_logs_wif_provider_resource } : {},
         local.cloud_env[c],
         local.need_vault ? { MC_FEDERATION_SECRET_OCID = oci_vault_secret.federation[c].id } : {},
@@ -99,6 +99,8 @@ locals {
           METRICS_BRIDGE_ENDPOINT   = "http://${oci_container_instances_container_instance.runtime[0].vnics[0].private_ip}:4319"
           MC_FEDERATION_SECRET_OCID = oci_vault_secret.federation[c].id
         },
+        c == "aws" ? { AWS_ROLE_ARN = coalesce(trimspace(var.aws_metrics_role_arn)) } : {},
+        c == "azure" ? { AZURE_CLIENT_ID = coalesce(trimspace(var.azure_metrics_client_id)) } : {},
         c == "gcp" ? {
           GCP_WIF_PROVIDER_RESOURCE          = var.gcp_metrics_wif_provider_resource
           GCP_METRICS_SERVICE_ACCOUNT_EMAIL = var.gcp_metrics_service_account_email
