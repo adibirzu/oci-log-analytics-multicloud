@@ -30,7 +30,7 @@ def _instructions(path: Path) -> list[tuple[str, str]]:
 
 def test_dockerfiles_exist_and_metrics_bridge_moved():
     names = {p.name for p in DOCKERFILES}
-    assert {"logs-collector.Dockerfile", "metrics-bridge.Dockerfile"} <= names
+    assert {"logs-collector.Dockerfile", "metrics-bridge.Dockerfile", "otel-federation.Dockerfile"} <= names
     assert not (ROOT / "collectors" / "metrics_bridge" / "Dockerfile").exists()
 
 
@@ -94,9 +94,11 @@ def test_workflow_builds_both_images_for_both_architectures():
     text = WORKFLOW.read_text(encoding="utf-8")
     assert "container/logs-collector.Dockerfile" in text
     assert "container/metrics-bridge.Dockerfile" in text
+    assert "container/otel-federation.Dockerfile" in text
     assert "linux/amd64,linux/arm64" in text
     assert "ghcr.io/${{ steps.owner.outputs.lc }}/oci-la-mc-logs-collector" in text
     assert "ghcr.io/${{ steps.owner.outputs.lc }}/oci-la-mc-metrics-bridge" in text
+    assert "ghcr.io/${{ steps.owner.outputs.lc }}/oci-la-mc-otel-federation" in text
 
 
 def test_workflow_publishes_orm_zip_asset():

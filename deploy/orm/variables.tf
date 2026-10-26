@@ -174,6 +174,12 @@ variable "otel_collector_image" {
   default = "ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.162.0"
 }
 
+variable "otel_federation_image" {
+  type        = string
+  default     = "__IMAGE_REGISTRY__/oci-la-mc-otel-federation:__IMAGE_TAG__"
+  description = "Vault-aware OTel launcher image used by the isolated per-cloud metric pullers."
+}
+
 # ---- Runtime ---------------------------------------------------------------
 variable "container_shape" {
   type    = string
@@ -224,4 +230,46 @@ variable "existing_kms_key_ocid" {
   type        = string
   default     = ""
 
+}
+
+variable "azure_checkpoint_account_url" {
+  type        = string
+  default     = ""
+  description = "HTTPS Blob Storage account URL for durable Event Hubs checkpoints."
+}
+
+variable "azure_checkpoint_container" {
+  type        = string
+  default     = ""
+  description = "Existing Blob Storage container accessible to the federated identity."
+}
+
+variable "azure_dlq_directory" {
+  type        = string
+  default     = "/tmp/mc-azure-poison"
+  description = "Private local directory for poison envelopes; persists only for container lifetime."
+}
+
+variable "gcp_wif_provider_resource" {
+  type        = string
+  default     = ""
+  description = "Exact projects/<NUMBER>/locations/global/workloadIdentityPools/<POOL>/providers/<PROVIDER> resource."
+}
+
+variable "gcp_dlq_topic" {
+  type        = string
+  default     = ""
+  description = "Exact projects/<PROJECT>/topics/<TOPIC> dead-letter topic in the subscription project."
+}
+
+variable "gcp_dlq_directory" {
+  type        = string
+  default     = "/tmp/mc-gcp-poison"
+  description = "Private local directory for poison envelopes; persists only for container lifetime."
+}
+
+variable "azure_consumer_group" {
+  type        = string
+  default     = ""
+  description = "Existing Event Hubs consumer group assigned to this collector."
 }

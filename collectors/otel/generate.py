@@ -104,7 +104,7 @@ def _receivers_aws(cfg: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-AZURE_FEDERATED_TOKEN_FILE = "/var/run/secrets/azure/tokens/azure-identity-token"
+AZURE_FEDERATED_TOKEN_FILE = "${env:AZURE_FEDERATED_TOKEN_FILE}"
 AZURE_AUTH_EXTENSION = "azureauth"
 
 
@@ -112,7 +112,7 @@ def _azure_extension(identity: str) -> dict[str, Any]:
     """azureauth extension block; field names verified against otelcol-contrib 0.162.0."""
     if identity == "managed_identity":
         return {"managed_identity": {}}
-    # Workload identity: federated token projected by the cluster; no client secret.
+    # Workload identity: token is supplied by the per-cloud launcher; no client secret.
     return {
         "workload_identity": {
             "tenant_id": "${env:AZURE_TENANT_ID}",

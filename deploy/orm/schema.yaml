@@ -30,11 +30,18 @@ variableGroups:
       - azure_subscription_id
       - azure_eventhub_namespace
       - azure_eventhub_name
+      - azure_consumer_group
+      - azure_checkpoint_account_url
+      - azure_checkpoint_container
+      - azure_dlq_directory
   - title: "GCP"
     variables:
       - enable_gcp
       - gcp_project_id
       - gcp_subscription
+      - gcp_dlq_topic
+      - gcp_dlq_directory
+      - gcp_wif_provider_resource
   - title: "Log Analytics"
     variables:
       - existing_log_group_ocid
@@ -54,6 +61,7 @@ variableGroups:
       - logs_collector_image
       - metrics_bridge_image
       - otel_collector_image
+      - otel_federation_image
   - title: "Runtime and network"
     variables:
       - container_shape
@@ -240,6 +248,11 @@ variables:
     title: "OpenTelemetry Collector Contrib image (pinned)"
     description: "OpenTelemetry Collector Contrib image (pinned)."
     type: string
+  otel_federation_image:
+    title: "Vault-aware OpenTelemetry Collector image"
+    description: "Per-cloud OTel launcher that reads only its assigned rotating Vault assertion."
+    type: string
+    visible: enable_metrics
   container_shape:
     title: "Container instance shape"
     description: "Container instance shape."
@@ -271,3 +284,38 @@ variables:
   tenancy_ocid:
     type: string
     visible: false
+  azure_checkpoint_account_url:
+    title: "Azure checkpoint account url"
+    description: "HTTPS Blob Storage account URL for durable Event Hubs checkpoints."
+    type: string
+    visible: enable_azure
+  azure_checkpoint_container:
+    title: "Azure checkpoint container"
+    description: "Existing Blob Storage container accessible to the federated identity."
+    type: string
+    visible: enable_azure
+  azure_dlq_directory:
+    title: "Azure dlq directory"
+    description: "Private local directory for poison envelopes; persists only for container lifetime."
+    type: string
+    visible: enable_azure
+  gcp_wif_provider_resource:
+    title: "Gcp wif provider resource"
+    description: "Exact projects/<NUMBER>/locations/global/workloadIdentityPools/<POOL>/providers/<PROVIDER> resource."
+    type: string
+    visible: enable_gcp
+  gcp_dlq_topic:
+    title: "Gcp dlq topic"
+    description: "Exact projects/<PROJECT>/topics/<TOPIC> dead-letter topic in the subscription project."
+    type: string
+    visible: enable_gcp
+  gcp_dlq_directory:
+    title: "Gcp dlq directory"
+    description: "Private local directory for poison envelopes; persists only for container lifetime."
+    type: string
+    visible: enable_gcp
+  azure_consumer_group:
+    title: "Event Hubs consumer group"
+    description: "Existing consumer group assigned to this collector."
+    type: string
+    visible: enable_azure
