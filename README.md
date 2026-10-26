@@ -7,8 +7,8 @@ Centralize AWS, Azure and GCP telemetry in Oracle Cloud Infrastructure:
 | Signal | Destination | Status |
 |---|---|---|
 | Logs | OCI Log Analytics | AWS CloudTrail live-proven; Azure Event Hubs and GCP Pub/Sub collectors ported |
-| Metrics | OCI Monitoring | Prometheus exporters + OTel (seeded from `oci-prometheus-otel-monitoring`); cloud-native metric pulls planned |
-| Traces / APM | OCI APM (OTLP) | planned |
+| Metrics | OCI Monitoring | Bridge and cloud-native pull configurations implemented locally; live monitoring acceptance pending (MC-22) |
+| Traces / APM | OCI APM (OTLP) | Gateway and ORM integration implemented locally; live end-to-end acceptance pending (MC-23) |
 
 Every cloud integration can be enabled and disabled on demand so idle test stacks cost nothing.
 
