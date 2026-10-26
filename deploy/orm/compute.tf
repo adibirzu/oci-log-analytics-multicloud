@@ -34,7 +34,6 @@ locals {
     }
     gcp = {
       GCP_PROJECT_ID            = var.gcp_project_id
-      GCP_WIF_PROVIDER_RESOURCE = var.gcp_wif_provider_resource
       GCP_PUBSUB_DLQ_TOPIC      = var.gcp_dlq_topic
       GCP_DLQ_DIRECTORY         = var.gcp_dlq_directory
       GCP_ALLOWED_PROJECT_IDS   = jsonencode([var.gcp_project_id])
@@ -50,6 +49,7 @@ locals {
       env = merge(
         local.common_env,
         { LOGAN_LOG_GROUP_OCID = local.log_group_ocid },
+        c == "gcp" ? { GCP_WIF_PROVIDER_RESOURCE = var.gcp_logs_wif_provider_resource } : {},
         local.cloud_env[c],
         local.need_vault ? { MC_FEDERATION_SECRET_OCID = oci_vault_secret.federation[c].id } : {},
       )
@@ -99,7 +99,10 @@ locals {
           METRICS_BRIDGE_ENDPOINT   = "http://${oci_container_instances_container_instance.runtime[0].vnics[0].private_ip}:4319"
           MC_FEDERATION_SECRET_OCID = oci_vault_secret.federation[c].id
         },
-        c == "gcp" ? { GCP_METRICS_SERVICE_ACCOUNT_EMAIL = var.gcp_metrics_service_account_email } : {},
+        c == "gcp" ? {
+          GCP_WIF_PROVIDER_RESOURCE          = var.gcp_metrics_wif_provider_resource
+          GCP_METRICS_SERVICE_ACCOUNT_EMAIL = var.gcp_metrics_service_account_email
+        } : {},
         local.sink != "monitoring" ? { OCI_APM_ENDPOINT = local.apm_endpoint, OCI_APM_PRIVATE_DATAKEY = local.apm_private_key } : {},
       )
     }

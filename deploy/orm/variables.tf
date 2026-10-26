@@ -250,10 +250,16 @@ variable "azure_dlq_directory" {
   description = "Private local directory for poison envelopes; persists only for container lifetime."
 }
 
-variable "gcp_wif_provider_resource" {
+variable "gcp_logs_wif_provider_resource" {
   type        = string
   default     = ""
-  description = "Exact projects/<NUMBER>/locations/global/workloadIdentityPools/<POOL>/providers/<PROVIDER> resource."
+  description = "workload_identity_provider_resource output from mcctl enable gcp --signal logs."
+}
+
+variable "gcp_metrics_wif_provider_resource" {
+  type        = string
+  default     = ""
+  description = "workload_identity_provider output from mcctl enable gcp --signal metrics."
 }
 
 variable "gcp_metrics_service_account_email" {

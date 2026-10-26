@@ -1,5 +1,6 @@
 """Static and packaging checks for the Resource Manager stack in deploy/orm."""
 
+import json
 import re
 import shutil
 import subprocess
@@ -158,3 +159,50 @@ def test_orm_image_names_match_published_images():
     referenced = set(re.findall(r"__IMAGE_REGISTRY__/([a-z0-9-]+):__IMAGE_TAG__",
                                 (root / "deploy/orm/variables.tf").read_text(encoding="utf-8")))
     assert referenced and referenced <= published, (referenced, published)
+
+
+@pytest.mark.skipif(shutil.which("terraform") is None, reason="terraform not installed")
+@pytest.mark.parametrize("logs,metrics", [(True, True), (True, False), (False, True)])
+def test_gcp_signal_environments_render_with_separate_providers(tmp_path, logs, metrics):
+    main_locals = "locals {" + (ORM / "main.tf").read_text().split("locals {", 1)[1]
+    compute_locals = (ORM / "compute.tf").read_text().split('\nresource "', 1)[0]
+    configuration = main_locals + "\n" + compute_locals
+    for external in ("data", "oci_vault_secret", "oci_container_instances_container_instance"):
+        configuration = configuration.replace(external + ".", "var." + external + ".")
+    (tmp_path / "main.tf").write_text(configuration + '\nlocals {\n  log_group_ocid = "<LOG_GROUP>"\n  apm_endpoint = "<APM_ENDPOINT>"\n  apm_private_key = "<APM_KEY>"\n}\n')
+    shutil.copyfile(ORM / "variables.tf", tmp_path / "variables.tf")
+    fakes = {
+        "data": {
+            "oci_objectstorage_namespace": {"this": {"namespace": "<NAMESPACE>"}},
+            "oci_identity_availability_domains": {"this": {"availability_domains": [{"name": "<AD>"}]}},
+        },
+        "oci_vault_secret": {"federation": {"gcp": {"id": "<SECRET_ID>"}}},
+        "oci_container_instances_container_instance": {"runtime": [{"vnics": [{"private_ip": "<BRIDGE_HOST>"}]}]},
+    }
+    (tmp_path / "fakes.tf").write_text("\n".join(
+        f'variable "{name}" {{ default = {json.dumps(value)} }}' for name, value in fakes.items()
+    ))
+    shutil.copytree(ORM / "templates", tmp_path / "templates")
+    provider = "projects/" + "123" + "/locations/global/workloadIdentityPools/"
+    inputs = {
+        "region": "<REGION>", "tenancy_ocid": "<TENANCY>", "compartment_ocid": "<COMPARTMENT>",
+        "enable_gcp": True, "enable_logs": logs, "enable_metrics": metrics,
+        "gcp_logs_wif_provider_resource": provider + "logs/providers/logs",
+        "gcp_metrics_wif_provider_resource": provider + "metrics/providers/metrics",
+        "gcp_metrics_service_account_email": "reader@" + "example-project" + ".iam.gserviceaccount.com",
+    }
+    (tmp_path / "terraform.tfvars.json").write_text(json.dumps(inputs))
+    result = subprocess.run(
+        ["terraform", "console", "-no-color"], cwd=tmp_path, text=True, capture_output=True,
+        input='jsonencode({logs = local.logs_containers, metrics = local.metrics_pullers})\n',
+    )
+    assert result.returncode == 0, result.stderr
+    rendered = json.loads(json.loads(result.stdout))
+    assert set(rendered["logs"]) == ({"gcp"} if logs else set())
+    assert set(rendered["metrics"]) == ({"gcp"} if metrics else set())
+    for signal, enabled in (("logs", logs), ("metrics", metrics)):
+        if enabled:
+            env = rendered[signal]["gcp"]["env"]
+            assert env["GCP_WIF_PROVIDER_RESOURCE"] == inputs[f"gcp_{signal}_wif_provider_resource"]
+            if signal == "metrics":
+                assert env["GCP_METRICS_SERVICE_ACCOUNT_EMAIL"] == inputs["gcp_metrics_service_account_email"]

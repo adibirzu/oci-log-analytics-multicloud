@@ -41,7 +41,8 @@ variableGroups:
       - gcp_subscription
       - gcp_dlq_topic
       - gcp_dlq_directory
-      - gcp_wif_provider_resource
+      - gcp_logs_wif_provider_resource
+      - gcp_metrics_wif_provider_resource
       - gcp_metrics_service_account_email
   - title: "Log Analytics"
     variables:
@@ -300,9 +301,14 @@ variables:
     description: "Private local directory for poison envelopes; persists only for container lifetime."
     type: string
     visible: enable_azure
-  gcp_wif_provider_resource:
-    title: "Gcp wif provider resource"
-    description: "Exact projects/<NUMBER>/locations/global/workloadIdentityPools/<POOL>/providers/<PROVIDER> resource."
+  gcp_logs_wif_provider_resource:
+    title: "GCP logs WIF provider resource"
+    description: "workload_identity_provider_resource output from mcctl enable gcp --signal logs."
+    type: string
+    visible: enable_gcp
+  gcp_metrics_wif_provider_resource:
+    title: "GCP metrics WIF provider resource"
+    description: "workload_identity_provider output from mcctl enable gcp --signal metrics."
     type: string
     visible: enable_gcp
   gcp_metrics_service_account_email:
