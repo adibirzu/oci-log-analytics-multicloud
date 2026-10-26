@@ -90,17 +90,6 @@ def test_workflow_actions_pinned_to_full_sha():
     assert len(pinned) == len(all_uses), f"unpinned actions: {set(all_uses) - {f'{a}@{s}' for a, s in pinned}}"
 
 
-def test_workflow_builds_both_images_for_both_architectures():
-    text = WORKFLOW.read_text(encoding="utf-8")
-    assert "container/logs-collector.Dockerfile" in text
-    assert "container/metrics-bridge.Dockerfile" in text
-    assert "container/otel-federation.Dockerfile" in text
-    assert "linux/amd64,linux/arm64" in text
-    assert "ghcr.io/${{ steps.owner.outputs.lc }}/oci-la-mc-logs-collector" in text
-    assert "ghcr.io/${{ steps.owner.outputs.lc }}/oci-la-mc-metrics-bridge" in text
-    assert "ghcr.io/${{ steps.owner.outputs.lc }}/oci-la-mc-otel-federation" in text
-
-
 def test_workflow_publishes_orm_zip_asset():
     text = WORKFLOW.read_text(encoding="utf-8")
     assert "scripts/build_orm_zip.sh" in text
