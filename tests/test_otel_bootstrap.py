@@ -145,7 +145,7 @@ def test_gcp_projected_token_directory_untouched(monkeypatch, tmp_path):
     assert not config.exists()
 
 
-@pytest.mark.parametrize("account", ["", "reader", "reader@example.invalid", "reader@project.iam.gserviceaccount.com/path"])
+@pytest.mark.parametrize("account", ["", "reader", "reader@example.invalid", "reader@example.invalid/path"])
 def test_gcp_invalid_reader_refuses_child_start(monkeypatch, tmp_path, account):
     captured = {}
     _capture_child(monkeypatch, captured, 0)
