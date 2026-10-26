@@ -149,16 +149,30 @@ def test_terraform_validates_in_temp_copy(tmp_path):
     assert fmt.returncode == 0, fmt.stdout
 
 
-def test_orm_image_names_match_published_images():
-    import re
-    from pathlib import Path
-
-    root = Path(__file__).resolve().parents[1]
-    workflow = (root / ".github/workflows/release.yml").read_text(encoding="utf-8")
-    published = set(re.findall(r"/(oci-la-mc-[a-z-]+):", workflow))
-    referenced = set(re.findall(r"__IMAGE_REGISTRY__/([a-z0-9-]+):__IMAGE_TAG__",
-                                (root / "deploy/orm/variables.tf").read_text(encoding="utf-8")))
-    assert referenced and referenced <= published, (referenced, published)
+@pytest.mark.parametrize("image", ["logs-collector", "metrics-bridge", "otel-federation"])
+def test_release_builds_orm_images_for_both_architectures(image):
+    workflow = yaml.safe_load((ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8"))
+    job = workflow["jobs"]["images"]
+    assert job["runs-on"]
+    assert job.get("if", True) is True
+    builds = [
+        step for step in job["steps"]
+        if step.get("uses", "").partition("@")[0] == "docker/build-push-action"
+        and step.get("with", {}).get("file") == f"container/{image}.Dockerfile"
+    ]
+    assert len(builds) == 1
+    step = builds[0]
+    assert step.get("if", True) is True
+    settings = step["with"]
+    assert settings["context"] == "."
+    assert {platform.strip() for platform in settings["platforms"].split(",")} == {"linux/amd64", "linux/arm64"}
+    assert settings["push"] is True
+    tags = [tag.strip() for tag in settings["tags"].splitlines() if tag.strip()]
+    assert tags == [
+        "ghcr.io/${{ steps.owner.outputs.lc }}/oci-la-mc-" + image + ":${{ steps.ver.outputs.version }}",
+        "${{ startsWith(github.ref, 'refs/tags/v') && format('ghcr.io/{0}/oci-la-mc-"
+        + image + ":latest', steps.owner.outputs.lc) || '' }}",
+    ]
 
 
 @pytest.mark.skipif(shutil.which("terraform") is None, reason="terraform not installed")
