@@ -99,6 +99,7 @@ locals {
           METRICS_BRIDGE_ENDPOINT   = "http://${oci_container_instances_container_instance.runtime[0].vnics[0].private_ip}:4319"
           MC_FEDERATION_SECRET_OCID = oci_vault_secret.federation[c].id
         },
+        c == "gcp" ? { GCP_METRICS_SERVICE_ACCOUNT_EMAIL = var.gcp_metrics_service_account_email } : {},
         local.sink != "monitoring" ? { OCI_APM_ENDPOINT = local.apm_endpoint, OCI_APM_PRIVATE_DATAKEY = local.apm_private_key } : {},
       )
     }

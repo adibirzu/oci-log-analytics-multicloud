@@ -25,9 +25,11 @@ _GCP_PROVIDER = re.compile(
 )
 
 
-def _gcp_credential_config(token_file: str, provider: str, directory: str) -> str:
+def _gcp_credential_config(token_file: str, provider: str, service_account: str, directory: str) -> str:
     """Write a mode-0600 external-account config in a private temporary directory."""
-    if not _GCP_PROVIDER.fullmatch(provider):
+    if not _GCP_PROVIDER.fullmatch(provider) or not re.fullmatch(
+        r"[a-z0-9][a-z0-9-]*@[a-z0-9][a-z0-9-]*\.iam\.gserviceaccount\.com", service_account
+    ):
         raise FederationError("federation_identity_configuration_invalid")
     path = Path(directory) / "google-external-account.json"
     content = {
@@ -35,6 +37,10 @@ def _gcp_credential_config(token_file: str, provider: str, directory: str) -> st
         "audience": f"//iam.googleapis.com/{provider}",
         "subject_token_type": "urn:ietf:params:oauth:token-type:jwt",
         "token_url": "https://sts.googleapis.com/v1/token",
+        "service_account_impersonation_url": (
+            "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/"
+            f"{service_account}:generateAccessToken"
+        ),
         "credential_source": {"file": token_file, "format": {"type": "text"}},
     }
     with os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), "w") as stream:
@@ -50,17 +56,18 @@ def collector_environment(cloud: str, env: Mapping[str, str]) -> Iterator[dict[s
             provider = resolved.get("GCP_WIF_PROVIDER_RESOURCE", "").strip()
             with tempfile.TemporaryDirectory(prefix="mc-otel-gcp-") as directory:
                 resolved["GOOGLE_APPLICATION_CREDENTIALS"] = _gcp_credential_config(
-                    resolved["GCP_WIF_TOKEN_FILE"], provider, directory
+                    resolved["GCP_WIF_TOKEN_FILE"], provider,
+                    resolved.get("GCP_METRICS_SERVICE_ACCOUNT_EMAIL", "").strip(), directory
                 )
                 yield resolved
         else:
             yield resolved
 
 
-def run_collector(cloud: str, config: str, otel_bin: str, extra_args: Sequence[str], env: Mapping[str, str]) -> int:
+def run_collector(cloud: str, config: str, env: Mapping[str, str]) -> int:
     """Run the collector as a child and return its exit status without logging secrets."""
     with termination_cleanup(), collector_environment(cloud, env) as resolved:
-        child = subprocess.Popen([otel_bin, "--config", config, *extra_args], env=resolved)
+        child = subprocess.Popen(["/usr/local/bin/otelcol-contrib", "--config", config], env=resolved)
         try:
             return int(child.wait())
         except BaseException:
@@ -77,10 +84,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cloud", choices=("aws", "azure", "gcp"), required=True)
     parser.add_argument("--config", required=True)
-    parser.add_argument("--otel-bin", default="/usr/local/bin/otelcol-contrib")
-    args, extra = parser.parse_known_args(argv)
+    args = parser.parse_args(argv)
     try:
-        return run_collector(args.cloud, args.config, args.otel_bin, extra, os.environ)
+        return run_collector(args.cloud, args.config, os.environ)
     except (FederationError, OSError):
         print("federation_token_unavailable", file=sys.stderr)
         return 2

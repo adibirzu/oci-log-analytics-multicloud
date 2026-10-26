@@ -256,6 +256,12 @@ variable "gcp_wif_provider_resource" {
   description = "Exact projects/<NUMBER>/locations/global/workloadIdentityPools/<POOL>/providers/<PROVIDER> resource."
 }
 
+variable "gcp_metrics_service_account_email" {
+  type        = string
+  default     = ""
+  description = "service_account_email output from mcctl enable gcp --signal metrics; impersonated by the metric puller."
+}
+
 variable "gcp_dlq_topic" {
   type        = string
   default     = ""

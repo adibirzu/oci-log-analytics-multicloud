@@ -87,7 +87,7 @@ The generated network permits outbound traffic to any destination on all protoco
 
 ### Vault federation for metric pullers (MC-29, configured; provider and release gates open)
 
-The stack configures the Vault-aware OTel launcher separately for each cloud. It passes only that cloud's SDK environment and assertion secret. Azure reads the launcher-selected token file; GCP receives a temporary external-account credential configuration in a private directory. The launcher forwards managed shutdown to the collector and waits for it before removing identity files.
+The stack configures the Vault-aware OTel launcher separately for each cloud. It passes only that cloud's SDK environment and assertion secret. Azure reads the launcher-selected token file; GCP receives a temporary external-account credential configuration in a private directory. Set `gcp_metrics_service_account_email` to the `service_account_email` output of `mcctl enable gcp --signal metrics`, and `gcp_wif_provider_resource` to that module's `workload_identity_provider` output. The GCP credential configuration impersonates this reader account; a missing or malformed account makes the launcher refuse startup. The launcher forwards managed shutdown to the collector and waits for it before removing identity files.
 
 The bridge listens on the private interface so isolated pullers can reach it. For a stack-created subnet, inbound TCP port 4319 is allowed from the configured VCN CIDR only when metric pullers run. A supplied subnet must already permit this traffic; its rules are not changed. This endpoint has no application authentication: subnet access must remain restricted to trusted workloads.
 

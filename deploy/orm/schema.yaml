@@ -42,6 +42,7 @@ variableGroups:
       - gcp_dlq_topic
       - gcp_dlq_directory
       - gcp_wif_provider_resource
+      - gcp_metrics_service_account_email
   - title: "Log Analytics"
     variables:
       - existing_log_group_ocid
@@ -302,6 +303,11 @@ variables:
   gcp_wif_provider_resource:
     title: "Gcp wif provider resource"
     description: "Exact projects/<NUMBER>/locations/global/workloadIdentityPools/<POOL>/providers/<PROVIDER> resource."
+    type: string
+    visible: enable_gcp
+  gcp_metrics_service_account_email:
+    title: "GCP metrics reader service account"
+    description: "service_account_email output from mcctl enable gcp --signal metrics; impersonated by the metric puller."
     type: string
     visible: enable_gcp
   gcp_dlq_topic:
